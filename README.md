@@ -101,7 +101,7 @@ Screenshot of the outcome:
 - `chmod 744`: Sets file/directory permissions (`7`=rwx, `4`=r--).
 - `chmod 777`: Gives full read/write/execute permissions to all.
 - `groupadd`: Adds a new group to the system.
-- `useradd -m -g`: Creates a user and assigns him to a primary group.
+- `useradd -g`: Creates a user and assigns him to a primary group.
 - `chown`: Changes ownership of a file or directory.
 - `ls -lR`: Recursively lists directory contents with permissions.
 - `groups`: Shows all groups a user belongs to.
