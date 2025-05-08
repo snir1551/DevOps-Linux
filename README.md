@@ -94,7 +94,7 @@ ls -lR ~/project1
 groups devuser
 ```
 Screenshot of the outcome:  
-![alt text](image.png)
+![alt text](./Task1/Task1.png)
 ## Command Explanations
 
 - `mkdir -p`: Creates directories; `-p` ensures parent directories are made as needed.
