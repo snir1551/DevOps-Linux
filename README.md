@@ -114,7 +114,7 @@ Screenshot of the outcome:
 
 
 <details>
-<summary>Week 2 Task – Log Analysis Report Generator</summary>
+<summary>Week 2 Task – Advanced Log Report Automation</summary>
 <br />
 
 ## 🧠 Task Overview
