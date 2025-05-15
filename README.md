@@ -161,7 +161,6 @@ Each command below was used in the log report script. Here’s what it does — 
 | `${#ARRAY[@]}` | Returns the number of elements in an array. |
 | `exit 1` | Stops the script with an error status (non-zero). |
 | `echo "text"` | Prints text to the screen or appends to a file. |
-| `printf "%-10s | Prints text in a neatly aligned table format. |
 | `grep -o "word" file` | Finds every match of `"word"` in `file`, one per line. |
 | `wc -l` | Counts how many lines are in the input (used to count matches). |
 | `>>` | Appends output to a file (without deleting its content). |
