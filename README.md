@@ -110,3 +110,76 @@ Screenshot of the outcome:
 </details>
 
 ******
+
+
+
+<details>
+<summary>Week 2 Task – Log Analysis Report Generator</summary>
+<br />
+
+## 🧠 Task Overview
+
+Develop a Bash script that:
+
+- Accepts a log directory path
+- Accepts one or more keywords to search for
+- Counts keyword occurrences in .log files
+- Generates reports in both .txt and .csv formats
+- Supports both interactive and argument-based usage
+
+---
+
+
+### ✅ CLI Options
+
+| Flag           | Description                                                  |
+|----------------|--------------------------------------------------------------|
+| --keywords     | Space-separated list of keywords to search in .log files     |
+| --logdir       | Directory containing the log files                           |
+| --interactive  | Run in interactive mode (ask for directory & keywords)       |
+| --help         | Show help message                                            |
+
+### 📄 Output
+
+- report.txt – Human-readable report in tabular format
+- report.csv – CSV file for spreadsheet or script integration
+
+---
+
+
+### 🧠 Simple Command Explanations
+
+Each command below was used in the log report script. Here’s what it does — in simple terms:
+
+| Command | Description |
+|--------|-------------|
+| `#!/bin/bash` | Declares that the script is written for the Bash shell. |
+| `read -p "..." VAR` | Asks the user a question and saves the input to `VAR`. |
+| `read -a ARRAY` | Reads multiple words (space-separated) into an array. |
+| `KEYWORDS=()` | Initializes an empty array called `KEYWORDS`. |
+| `if [ ! -d "$LOG_DIR" ]` | Checks if the directory in `LOG_DIR` does **not** exist. |
+| `${#ARRAY[@]}` | Returns the number of elements in an array. |
+| `exit 1` | Stops the script with an error status (non-zero). |
+| `echo "text"` | Prints text to the screen or appends to a file. |
+| `printf "%-10s | Prints text in a neatly aligned table format. |
+| `grep -o "word" file` | Finds every match of `"word"` in `file`, one per line. |
+| `wc -l` | Counts how many lines are in the input (used to count matches). |
+| `>>` | Appends output to a file (without deleting its content). |
+| `>` | Overwrites a file with new content (clears existing content). |
+| `find DIR -type f -name "*.log"` | Finds all `.log` files inside `DIR` (recursively). |
+| `while read -r file; do ... done` | Loops over each file found by `find`. |
+| `date +%s` | Returns the current time in seconds (used for timing). |
+| `date +"%Y-%m-%d %H:%M:%S.%3N"` | Prints full date & time with milliseconds. |
+| `$(( expression ))` | Performs math (e.g., subtracting start time from end time). |
+| `function name() { ... }` | Defines a reusable block of code (function). |
+| `"$@"` | Represents **all arguments** passed to the script. |
+| `case "$1" in ...)` | Used to handle flags like `--help`, `--logdir`, etc. |
+
+
+## 🧪 Example Usages
+
+### Non-interactive:
+
+bash
+./advanced_log_report.sh --keywords ERROR WARNING CRITICAL --logdir your_directory_name
+
