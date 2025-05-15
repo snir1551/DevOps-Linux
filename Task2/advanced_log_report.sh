@@ -115,7 +115,7 @@ function prompt_for_inputs() {
 
 
 function AdvancedLogReportAutomation() {
-	START_TIME=$(date +%s)
+	START_TIME=$(date +%s.%N)
 
 	parse_arguments $@
 
@@ -126,9 +126,9 @@ function AdvancedLogReportAutomation() {
 	validate_input
 	generate_report
 
-	END_TIME=$(date +%s)
-   
-    	echo "Total Execution Time: $((END_TIME - START_TIME))s" >> "$REPORT_FILE"    
+	END_TIME=$(date +%s.%N)
+  	RUNTIME=$(echo "$END_TIME - $START_TIME" | bc) 
+    	printf "Total Execution Time: %.3fs\n" "$RUNTIME" >> "$REPORT_FILE"    
 }
 
 AdvancedLogReportAutomation $@
