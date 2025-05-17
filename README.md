@@ -147,32 +147,132 @@ Develop a Bash script that:
 ---
 
 
-### 🧠 Simple Command Explanations
+### 🐚 Bash Script Commands Reference
 
-Each command below was used in the log report script. Here’s what it does — in simple terms:
+This document provides a categorized reference of Bash commands, operators, and syntax elements used in the script.
+
+---
+
+#### 🧠 General Bash Concepts
 
 | Command | Description |
 |--------|-------------|
 | `#!/bin/bash` | Declares that the script is written for the Bash shell. |
-| `read -p "..." VAR` | Asks the user a question and saves the input to `VAR`. |
-| `read -a ARRAY` | Reads multiple words (space-separated) into an array. |
-| `KEYWORDS=()` | Initializes an empty array called `KEYWORDS`. |
-| `if [ ! -d "$LOG_DIR" ]` | Checks if the directory in `LOG_DIR` does **not** exist. |
-| `${#ARRAY[@]}` | Returns the number of elements in an array. |
-| `exit 1` | Stops the script with an error status (non-zero). |
-| `echo "text"` | Prints text to the screen or appends to a file. |
-| `grep -o "word" file` | Finds every match of `"word"` in `file`, one per line. |
-| `wc -l` | Counts how many lines are in the input (used to count matches). |
-| `>>` | Appends output to a file (without deleting its content). |
-| `>` | Overwrites a file with new content (clears existing content). |
-| `find DIR -type f -name "*.log"` | Finds all `.log` files inside `DIR` (recursively). |
-| `while read -r file; do ... done` | Loops over each file found by `find`. |
-| `date +%s` | Returns the current time in seconds (used for timing). |
-| `date +"%Y-%m-%d %H:%M:%S.%3N"` | Prints full date & time with milliseconds. |
-| `$(( expression ))` | Performs math (e.g., subtracting start time from end time). |
 | `function name() { ... }` | Defines a reusable block of code (function). |
+| `local file` | Declares a local variable named `file` that is only accessible within the current function. |
+| `exit 1` | Stops the script with an error status (non-zero). |
+
+---
+
+#### 📥 Arguments and Parameters
+
+| Command | Description |
+|--------|-------------|
+| `$0` | Represents the name of the script or function being executed. |
+| `$1` | Refers to the first positional argument passed to the script or function. |
+| `$#` | Represents the number of positional arguments passed to a script or function. |
 | `"$@"` | Represents **all arguments** passed to the script. |
-| `case "$1" in ...)` | Used to handle flags like `--help`, `--logdir`, etc. |
+
+---
+
+#### 🔁 Loops and Conditions
+
+| Command | Description |
+|--------|-------------|
+| `if [ condition ]; then ... fi` | Basic conditional structure used to execute code based on a condition. |
+| `while read -r file; do ... done` | Loops over each line or file passed through the pipe safely. |
+| `for var in list; do ... done` | Loops over each item in a list or array and performs commands for each. |
+| `case "$1" in ...)` | Used to handle multiple options or flags like `--help`, `--logdir`, etc. |
+| `if [ ! -d "$LOG_DIR" ]` | Checks if the directory in `LOG_DIR` does **not** exist. |
+
+---
+
+#### 🧮 Arithmetic Operators
+
+| Command | Description |
+|--------|-------------|
+| `-eq` | Returns true if two numbers are equal. |
+| `-ne` | Returns true if two numbers are not equal. |
+| `-gt` | Returns true if the first number is greater than the second. |
+| `-lt` | Returns true if the first number is less than the second. |
+| `-ge` | Returns true if the first number is greater than or equal to the second. |
+| `-le` | Returns true if the first number is less than or equal to the second. |
+| `$(( expression ))` | Performs arithmetic operations like addition, subtraction, etc. |
+
+---
+
+#### 📋 Variables and Arrays
+
+| Command | Description |
+|--------|-------------|
+| `KEYWORDS=()` | Initializes an empty array called `KEYWORDS`. |
+| `KEYWORDS=(ERROR WARNING CRITICAL)` | Declares an array with values. |
+| `KEYWORDS[@]` | Expands to all elements of the array (each element quoted separately). |
+| `KEYWORDS[*]` | Expands to all elements as a single word (joined by IFS). |
+| `${#ARRAY[@]}` | Returns the number of elements in an array. |
+
+---
+
+#### ⌨️ Input
+
+| Command | Description |
+|--------|-------------|
+| `read -p "..." VAR` | Prompts the user for input and stores it in `VAR`. |
+| `read -a ARRAY` | Reads multiple words into an array. |
+
+---
+
+#### 🖨️ Output and Formatting
+
+| Command | Description |
+|--------|-------------|
+| `echo` / `echo "text"` | Prints text or variables to the terminal. |
+| `printf` | Formats and prints text with fine control (padding, precision, etc.). |
+| `%-10s` | A `printf` format specifier: left-aligns string in a 10-character width. |
+
+---
+
+#### 📁 Files and Redirection
+
+| Command | Description |
+|--------|-------------|
+| `>` | Overwrites a file with new content. |
+| `>>` | Appends output to a file without overwriting. |
+
+---
+
+#### 🔍 File Searching & Reading
+
+| Command | Description |
+|--------|-------------|
+| `find` | Searches files and directories recursively. |
+| `find DIR -type f -name "*.log"` | Finds all `.log` files inside `DIR` and its subdirectories. |
+
+---
+
+#### 🔎 Text Processing
+
+| Command | Description |
+|--------|-------------|
+| `grep -o` | Prints only the matched parts of each line. |
+| `grep -o "word" file` | Finds and prints each match of `"word"` in the file, one per line. |
+| `wc -l` | Counts the number of lines in input. Often used to count matches. |
+| `sed` | A stream editor used to perform basic text transformations on input. Example: `sed 's/old/new/'` replaces the first occurrence of `old` with `new`. |
+| `awk` | A powerful text-processing tool. Example: `awk '{ print $1 }'` prints the first word of each line. |
+
+---
+
+#### ⏱️ Time & Date
+
+| Command | Description |
+|--------|-------------|
+| `date` | Displays the current date and time. |
+| `date +%s` | Returns the current time in seconds since epoch (used for timing). |
+| `date +%s.%N` | Returns time in seconds with nanosecond precision. |
+| `date +"%Y-%m-%d %H:%M:%S.%3N"` | Prints the full date and time with milliseconds. |
+
+---
+
 
 
 ## 🧪 Example Usages
