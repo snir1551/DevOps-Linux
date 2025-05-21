@@ -122,9 +122,7 @@ extract_archives() {
 run_analysis() {
     	chmod +x ./advanced_log_report.sh
 
-	LOG_DIR="$LOCAL_DIR" \
-	REPORT_FILE="$REPORT_FILE" \
-	CSV_REPORT_FILE="$CSV_FILE" \
+	
     	./advanced_log_report.sh --interactive 
 }
 
