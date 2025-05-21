@@ -122,16 +122,17 @@ extract_archives() {
 run_analysis() {
     	chmod +x ./advanced_log_report.sh
 
-    	LOG_DIR="$LOCAL_DIR" \
-    	REPORT_FILE="$REPORT_FILE" \
-    	CSV_REPORT_FILE="$CSV_FILE" \
+	LOG_DIR="$LOCAL_DIR" \
+	REPORT_FILE="$REPORT_FILE" \
+	CSV_REPORT_FILE="$CSV_FILE" \
     	./advanced_log_report.sh --interactive 
 }
 
 finalize_report() {
     mv report.txt remote_report.txt
     mv report.csv remote_report.csv
-    sed -i "Remote Server: $SSH_USER_HOST\nAnalyzed Directory: $REMOTE_LOG_DIR\n" remote_report.txt
+    sed -i "1iRemote Server: $SSH_USER_HOST\nAnalyzed Directory: $REMOTE_LOG_DIR\n" remote_report.txt
+
 }
 
 send_email() {
