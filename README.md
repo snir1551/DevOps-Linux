@@ -271,14 +271,180 @@ This document provides a categorized reference of Bash commands, operators, and 
 | `date +%s.%N` | Returns time in seconds with nanosecond precision. |
 | `date +"%Y-%m-%d %H:%M:%S.%3N"` | Prints the full date and time with milliseconds. |
 
+
+</details>
+
 ---
 
 
+<details>
+<summary>Week 3 Task – Remote Log Monitoring with SSH & VM</summary>
+<br />
 
-## 🧪 Example Usages
+## 🧠 Task Overview
 
-### Non-interactive:
+Create a modular Bash script that:
 
-bash
-./advanced_log_report.sh --keywords ERROR WARNING CRITICAL --logdir your_directory_name
+- Connects to a remote Linux VM over SSH using a `.pem` key
+- Downloads `.log` files (either all, or only those modified in the last 24 hours)
+- Automatically extracts `.zip`, `.tar`, or `.tar.gz` files
+- Passes logs to a secondary script (`advanced_log_report.sh`) for keyword analysis
+- Generates `remote_report.txt` and `remote_report.csv`
+- Adds metadata (remote server, path) to the report
+- Optionally sends the report to your email
+
+---
+
+## ✅ CLI Options
+
+| Flag       | Description                                                                 |
+|------------|-----------------------------------------------------------------------------|
+| `--all`    | Download all logs, not just recent ones                                     |
+| `--email`  | Automatically prompt for email address and send the report after analysis   |
+| `--help`   | Display the help message and exit                                           |
+
+---
+
+## 🧪 Sample Execution
+
+```
+# Basic usage: downloads recent logs, prompts interactively
+./remote_log_analyzer.sh snir1551@20.217.201.167
+
+# Download all logs from the directory
+./remote_log_analyzer.sh snir1551@20.217.201.167 --all
+
+# Download all logs and email the report automatically
+./remote_log_analyzer.sh snir1551@20.217.201.167 --all --email
+
+```
+
+## 🧪 Example: Full Execution Output
+
+```
+$ ./remote_log_analyzer.sh snir1551@20.217.201.167
+
+- Enter the remote log directory path: /home/snir1551/logs
+
+Downloading ALL logs from snir1551@20.217.201.167:/home/snir1551/logs...
+logs/app.log                           100%   14KB 140.5KB/s   00:00
+logs/errors.zip                        100%   10KB 122.3KB/s   00:00
+
+Extracting archives...
+Archive extracted: logs/errors.zip → logs/errors/
+
+- Using provided log directory: ./downloaded_logs
+
+- Enter keywords to search for (separated by space): ERROR WARNING CRITICAL
+
+LOG REPORT
+Directory: ./downloaded_logs
+Keywords: ERROR WARNING CRITICAL
+Generated at: Thu May 22 04:43:11 IDT 2025
+
+Log File: app.log
+Keyword     | Occurrences
+-------------------------
+ERROR       | 14
+WARNING     | 3
+CRITICAL    | 0
+
+Report generated successfully!
+
+- Would you like to send the report via email? (yes/no): yes
+Enter your email address: snir@example.com
+📧 Email sent to snir@example.com with full report.
+
+✅ Done. Total Execution Time: 5.284 seconds
+📝 Report: remote_report.txt
+📊 CSV: remote_report.csv
+
+```
+
+## 📂 Generated Output Example
+
+📄 Output
+
+| File                | Description                                  |
+| ------------------- | -------------------------------------------- |
+| `remote_report.txt` | Human-readable summary with metadata         |
+| `remote_report.csv` | Structured CSV format for Excel or scripting |
+
+
+```
+remote_report.txt:
+
+Remote Server: snir1551@20.217.201.167
+Analyzed Directory: /home/snir1551/logs
+
+LOG REPORT
+Directory: ./downloaded_logs
+Keywords: ERROR WARNING CRITICAL
+Generated at: Thu May 22 04:43:11 IDT 2025
+
+Log File: app.log
+Keyword     | Occurrences
+-------------------------
+ERROR       | 14
+WARNING     | 3
+CRITICAL    | 0
+
+...
+```
+
+```
+remote_report.csv:
+
+File,Keyword,Occurrences
+app.log,ERROR,14
+app.log,WARNING,3
+app.log,CRITICAL,0
+...
+
+
+```
+
+## 🧪 What This Demonstrates
+✅ SSH download using .pem key
+
+✅ Download of full log directory (--all)
+
+✅ Extraction of .zip archive
+
+✅ Interactive keyword input (unless passed as environment variable)
+
+✅ Report generation in .txt and .csv
+
+✅ Automatic email sending (--email flag)
+
+
+📁 Project Structure
+
+project-folder/
+├── remote_log_analyzer.sh
+├── advanced_log_report.sh
+├── Linux-VM01_key.pem
+├── README.md
+└── downloaded_logs/
+    ├── *.log
+    ├── *.zip
+    └── *.tar.gz
+
+🧠 Skills Demonstrated
+
+- SSH key-based access and file transfers (scp, ssh)
+
+- Conditional logic for date-based filtering using mtime -1
+
+- File extraction automation
+
+- Modular scripting and function reuse
+
+- Email automation using mail and msmtp
+
+- Real-time prompting and error handling
+
+</details>
+
+
 
