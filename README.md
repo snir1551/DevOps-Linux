@@ -419,7 +419,7 @@ app.log,CRITICAL,0
 
 
 📁 Project Structure
-
+```
 project-folder/
 ├── remote_log_analyzer.sh
 ├── advanced_log_report.sh
@@ -429,6 +429,7 @@ project-folder/
     ├── *.log
     ├── *.zip
     └── *.tar.gz
+```
 
 🧠 Skills Demonstrated
 
