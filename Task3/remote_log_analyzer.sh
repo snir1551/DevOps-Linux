@@ -8,7 +8,7 @@ CSV_FILE="remote_report.csv"
 YELLOW="\033[1;33m"
 NC="\033[0m"
 
-
+# === Display help message ===
 print_help() {
     echo ""
     echo "Usage:"
@@ -29,6 +29,7 @@ print_help() {
     exit 0
 }
 
+# === Parse command-line arguments ===
 parse_arguments() {
 	if [[ "$1" == "--help" || $# -eq 0 ]]; then
 		print_help
@@ -55,6 +56,7 @@ parse_arguments() {
     	done
 }
 
+# === Validate required inputs and files ===
 validate_input() {
 	if [[ -z "$SSH_USER_HOST" ]]; then
 		echo "Missing SSH user@host."
@@ -72,9 +74,10 @@ validate_input() {
     	fi
 }
 
+# === Download logs from the remote server ===
 download_logs() {
-	echo "Enter the remote log directory path:"
-    	read -r REMOTE_LOG_DIR
+
+	read -p "Enter the remote log directory path: " REMOTE_LOG_DIR
 
     	mkdir -p "$LOCAL_DIR"
 
@@ -97,13 +100,14 @@ download_logs() {
         fi
 }
 
+# === Extract .zip/.tar/.tar.gz archives ===
 extract_archives() {
 	echo "Extracting archives..."
 
     
     	find "$LOCAL_DIR" -name "*.zip" | while read -r zipfile; do
         	zipdir=$(dirname "$zipfile")
-        	unzip -o "$zipfile" -d "$zipdir" >/dev/null
+        	unzip -o "$zipfile" -d "$zipdir"
     	done
 
     
@@ -119,13 +123,14 @@ extract_archives() {
     	done
 }
 
+# === Run local analysis using advanced_log_report.sh ===
 run_analysis() {
     	chmod +x ./advanced_log_report.sh
-
-	
+ 	LOG_DIR="$LOCAL_DIR" \
     	./advanced_log_report.sh --interactive 
 }
 
+# === Rename report files and add metadata ===
 finalize_report() {
     mv report.txt remote_report.txt
     mv report.csv remote_report.csv
@@ -133,6 +138,7 @@ finalize_report() {
 
 }
 
+# === Optionally send email with the report ===
 send_email() {
     read -p "Would you like to send the report via email? (yes/no): " ANSWER
 
@@ -151,7 +157,7 @@ send_email() {
     fi
 }
 
-# --- MAIN ---
+# === Main function that executes the full flow ===
 remote_log_analyzer() {
     parse_arguments "$@"
     validate_input
