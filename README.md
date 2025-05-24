@@ -7,6 +7,53 @@
 
 <details> 
 <summary>Theory</summary>
+<br />
+
+
+<details> 
+<summary>What is DevOps & Agile methodology</summary>
+<br />
+
+## What is DevOps and Why is it Important?
+
+**DevOps** is a set of practices that combines software development (**Dev**) and IT operations (**Ops**) to shorten the software development lifecycle and deliver high-quality software continuously.
+
+###  Why DevOps?
+
+- **Faster Delivery**: Automate processes for rapid feature and bug delivery.
+- **Improved Collaboration**: Enhance teamwork between developers and operations.
+- **Continuous Improvement**: Leverage feedback loops for ongoing enhancement.
+- **Higher Reliability**: Achieve system stability, uptime, and performance through best practices.
+
+---
+
+##  Agile Methodology and DevOps Principles
+
+###  Agile Methodology Overview
+
+- **Iterative Development**: Work in small, manageable cycles called sprints.
+- **Customer Feedback**: Continuously refine product based on feedback.
+- **Flexibility**: Adapt quickly to changing requirements.
+
+###  Core DevOps Principles
+
+| Principle                  | Description                                                 |
+|---------------------------|-------------------------------------------------------------|
+| Collaboration & Communication | Foster teamwork across all roles                          |
+| Automation                | Automate testing, deployment, and monitoring                |
+| Continuous Integration / Delivery (CI/CD) | Deliver small, incremental updates reliably |
+| Monitoring & Feedback     | Track system health and user experience                     |
+| Infrastructure as Code (IaC) | Manage infrastructure through code for scalability       |
+| Security (DevSecOps)      | Integrate security early in the development process         |
+
+
+
+ 
+</details>
+
+<details> 
+<summary>The Hierarchical Tree Structure in Linux File System</summary>
+<br />
 	
 ## The Hierarchical Tree Structure in Linux File System:
 The Linux file system is organized as a single hierarchical tree, where:
@@ -146,6 +193,201 @@ The Linux file system is organized in a standardized way. Each major directory h
 
 </details>
 
+<details> 
+<summary>inode in Linux</summary>
+
+## inode in Linux
+
+### Definition
+An inode (short for index node) is a fundamental data structure in the Linux file system that represents each file, directory, or object stored on the disk. <br />
+Every file in the system is assigned a unique inode number that serves as its identifier.
+
+### Important:
+An inode does not store the file’s name. The file name is stored in a directory entry that maps the name to the corresponding inode.
+
+### inode Contain
+
+| Field              | Description                                                               |
+| ------------------ | ------------------------------------------------------------------------- |
+| **mode**           | File type (regular file, directory, symlink, etc.) and permissions (rwx). |
+| **uid**            | User ID (owner of the file).                                              |
+| **gid**            | Group ID (group ownership).                                               |
+| **size**           | Size of the file in bytes.                                                |
+| **timestamps**     | Access (atime), modification (mtime), and change (ctime) times.           |
+| **block pointers** | Pointers to the data blocks where the file content is stored.             |
+| **link count**     | Number of hard links pointing to this inode.                              |
+
+
+### The Relationship Between a File Name and an inode
+
+- The file name is stored in a directory entry along with the inode number.
+- When you access a file, the system looks up the file name in the directory, retrieves the inode number, and then uses the inode to locate the actual data blocks.
+- For example: ls -i /etc/passwd → Shows the inode number of the file /etc/passwd.
+
+### Example of How it Works
+1. You run the command: cat /etc/passwd
+2. The system searches for the file passwd in the /etc directory.
+3. It finds the inode number corresponding to passwd.
+4. The system uses the inode to locate and read the file’s data blocks.
+5. The contents are displayed.
+
+
+
+
+<br />
+</details>	
+
+
+<details> 
+<summary>File Permissions in Linux</summary>
+
+##  File Permissions in Linux
+
+Permissions control who can access files and directories in Linux, and what they are allowed to do with them.
+This is a critical part of Linux security and multi-user management.
+
+### The Three Levels of Access
+
+Each file and directory in Linux has three sets of permissions:
+- User (Owner) → The person who owns the file.
+- Group → A group of users who share access rights.
+- Others → All other users on the system.
+
+For each level, there are three types of permissions:
+
+| Symbol | Permission | Meaning                                                     |
+| ------ | ---------- | ----------------------------------------------------------- |
+| `r`    | Read       | Can view the contents of a file / list a directory.         |
+| `w`    | Write      | Can modify a file / create and delete files in a directory. |
+| `x`    | Execute    | Can run a file (if executable) / enter a directory.         |
+
+### Example of File Permissions
+
+Let’s look at the output of ls -l:
+
+```
+-rwxr-xr--
+```
+
+| Section        | Meaning                                             |
+| -------------- | --------------------------------------------------- |
+| `-`            | File type: `-` for regular file, `d` for directory. |
+| `rwx` (user)   | Owner can read, write, and execute.                 |
+| `r-x` (group)  | Group can read and execute.                         |
+| `r--` (others) | Others can only read.                               |
+
+### Numeric (Octal) Representation
+
+Permissions can also be represented using octal numbers:
+- r = 4
+- w = 2
+- x = 1
+
+For example:
+- -rwxr-xr--  =  754
+
+Explanation:
+
+- Owner: rwx → 4+2+1 = 7
+
+- Group: r-x → 4+0+1 = 5
+
+- Others: r-- → 4+0+0 = 4
+
+
+### Common Permission Commands
+
+| Command | Description                            |
+| ------- | -------------------------------------- |
+| `chmod` | Change file permissions.               |
+| `chown` | Change file owner.                     |
+| `chgrp` | Change file group.                     |
+| `umask` | Set default permissions for new files. |
+
+### chmod Usage Examples
+
+| Command                 | Effect                                           |
+| ----------------------- | ------------------------------------------------ |
+| `chmod 755 myfile`      | Set permissions: owner=rwx, group=rx, others=rx. |
+| `chmod u+x myscript.sh` | Add execute permission for the user (owner).     |
+| `chmod g-w myfile`      | Remove write permission from group.              |
+| `chmod o=r myfile`      | Set others to read-only.                         |
+
+ ### Special Permissions
+
+Linux also supports special permissions for specific use cases:
+- Set-UID (s) → Run a file with the permissions of its owner.
+- Set-GID (s) → Run a file with the group’s permissions.
+- Sticky Bit (t) → Restrict deletion of files in shared directories (like /tmp).
+
+Example (with ls -l):
+
+```
+-rwsr-xr-x   (Set-UID on a file)
+drwxrwxrwt   (Sticky bit on a directory)
+```
+
+
+
+<br />
+</details>
+
+<details> 
+<summary>Special Permissions in Linux</summary>
+
+## Special Permissions in Linux
+
+Beyond the standard read (r), write (w), and execute (x) permissions, Linux provides special permission bits that offer additional control over how files and directories behave.
+
+### These special bits are:
+
+- Set-UID (s on user execute bit)
+  - What it does: When a file with Set-UID is executed, the process runs with the privileges of the file owner (usually root), rather than the user who executed the file.
+  - Use case: Needed for certain system programs like passwd (which modifies system files like /etc/shadow).
+  - Example: -rwsr-xr-x 1 root root 50K Jan 1 12:00 /usr/bin/passwd
+  
+
+- Set-GID (s on group execute bit)
+  - For files: Similar to Set-UID, but applies group permissions instead of user.
+  - For directories: New files created inside inherit the group ownership of the directory (rather than the user's primary group).
+  - Use case: Useful for shared project folders, e.g., /var/www for web servers.
+  - Example for directory: drwxrwsr-x 2 user devs 4.0K May 22  /projects
+ 
+- Sticky Bit (t on others execute bit)
+  - What it does: On directories, it prevents users from deleting or renaming files unless they are the owner (or root).
+  - Common usage: The /tmp directory, which is world-writable but each user should only delete their own files.
+  - Example: drwxrwxrwt 7 root root 4.0K May 22  /tmp
+
+### Octal Notation for Special Bits
+
+Special bits use an additional digit in octal notation, placed before the standard 3 permission digits:
+| Special | Octal | Effect                                |
+| ------- | ----- | ------------------------------------- |
+| Set-UID | 4     | Run as file owner                     |
+| Set-GID | 2     | Run as group / Inherit group for dirs |
+| Sticky  | 1     | Restrict deletions                    |
+
+For example: 
+
+```
+chmod 4755 myscript.sh
+```
+- 4 = Set-UID
+- 755 = rwxr-xr-x
+
+
+| Special Bit | Symbol in `ls -l` | Purpose                                    |
+| ----------- | ----------------- | ------------------------------------------ |
+| Set-UID     | `s` in user `x`   | Run file as owner                          |
+| Set-GID     | `s` in group `x`  | Run file as group / inherit group for dirs |
+| Sticky Bit  | `t` in others `x` | Restrict deletions in shared directories   |
+
+
+<br />
+</details>
+
+
+</details>
 <details> 
 <summary>Linux Commands</summary>
     
