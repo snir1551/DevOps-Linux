@@ -1564,6 +1564,8 @@ git commit -m "merged feature-b into feature-a"
   ```
   git log --oneline --graph --all
   ```
+  ![image](https://github.com/user-attachments/assets/61eb9f89-e6e6-49d4-9b8e-fa706549b775)
+
 
   Switch to feature-a:
   ```
@@ -1606,6 +1608,15 @@ git commit -m "merged feature-b into feature-a"
 | Ideal for **cleaning up** a feature branch before merging            | Ideal for **combining work** from different branches                  |
 | Can cause conflicts that need to be resolved per-commit              | Can cause conflicts but usually resolved all at once during the merge |
 
+## Create a new GitHub repository & Set the remote in your local repository
+
+- Go to https://github.com/new.
+- Give your repository a name (e.g., MyProject).
+- Keep it empty (do not add README, .gitignore, or license for now).
+- git remote set-url origin git@github.com:your-username/your-repository.git
+
+- Set the remote in your local repository
+- In your local Git project folder, connect your local repository to the GitHub repository via SSH
 
 ## GitHub Pull Requests & Code Review
 
@@ -1613,13 +1624,11 @@ git commit -m "merged feature-b into feature-a"
 
   Push feature-a:
   ```
-  git switch feature-a
   git push -u origin feature-a
   ```
 
   Push feature-b:
   ```
-  git switch feature-b
   git push -u origin feature-b
   ```
 
