@@ -1426,6 +1426,158 @@ project-folder/
 
 </details>
 
+<details>
+<summary>Week 4 Task – Daily Practice Tasks</summary>
+<br />
+
+## Task 1: Branching & Switching
+
+Steps:
+
+- Create a new local Git repository:
+
+```
+mkdir my-git-project
+cd my-git-project
+git init
+```
+
+- Create main branch:
+
+```
+git branch -M main
+echo "Initial content" > README.md
+git add README.md
+git commit -m "Initial commit"
+```
+
+- Create two branches:
+
+```
+git branch feature-a
+git branch feature-b
+```
+
+- show the branches that you have:
+
+```
+git branch
+```
+you need see: main, feature-a, feature-b
+
+- Switch between branches:
+
+```
+git switch feature-a
+git switch feature-b
+```
+
+- Add a simple change and commit it in each branch:
+
+In feature-a:
+```
+echo "Hello from feature-a" > greetings.txt
+git add greetings.txt
+git commit -m "Add greetings.txt in feature-a"
+```
+
+In feature-b:
+```
+echo "Hello from feature-b" > greetings.txt
+git add greetings.txt
+git commit -m "Add greetings.txt in feature-b"
+```
+
+
+## Task 2: Simulate and Resolve Merge Conflicts
+
+- Modify the same line in a file on both feature-a and feature-b
+
+```
+git switch feature-a
+echo "Hello from feature-a" > greetings.txt
+git add greetings.txt
+git commit -m "Update greetings.txt in feature-a"
+```
+
+```
+git switch feature-b
+echo "Hello from feature-b" > greetings.txt
+git add greetings.txt
+git commit -m "Update greetings.txt in feature-b"
+```
+
+Now both branches have different changes in the same file (greetings.txt).
+
+- Merge one branch into the other and observe the conflict
+
+For example, merge feature-b into feature-a:
+
+```
+git switch feature-a
+git merge feature-b
+```
+
+You will see a conflict like this:
+
+```
+CONFLICT (content): Merge conflict in greetings.txt
+Automatic merge failed; fix conflicts and then commit the result.
+```
+
+- Resolve the conflict using either command-line or VS Code
+
+
+## Task 3: Rebase and Cherry-Pick
+
+- Use git rebase to reapply commits from feature-a onto main
+
+  Switch to feature-a:
+  ```
+  git switch feature-a
+  ```
+  Rebase onto main:
+  ```
+  git rebase main
+  ```
+
+- Document what happens to the commit history
+  - Rebase moves the commits from feature-a and reapplies them on top of main.
+  - The commits from feature-a get new commit hashes, because Git is creating new commits during the rebase.
+  - The commit history becomes linear: It looks as if the feature-a changes were made after the latest commit on main.
+
+- Use git cherry-pick to apply a single commit from feature-b to main
+
+  First, find the commit hash in feature-b:
+  ```
+  git log feature-b --oneline
+  ```
+
+  Switch to main:
+  ```
+  git switch main
+  ```
+
+  Apply the commit:
+  ```
+  git cherry-pick yourcommit
+  ```
+
+- Explain the difference between rebase and merge in your own words
+
+| Rebase                                                               | Merge                                                                 |
+| -------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Moves commits from one branch onto another, creating **new** commits | Combines changes from both branches into a new **merge commit**       |
+| Creates a **linear** history (no merge commits)                      | Keeps the full **branching** history (shows splits and merges)        |
+| Commit hashes change                                                 | Commit hashes stay the same                                           |
+| Ideal for **cleaning up** a feature branch before merging            | Ideal for **combining work** from different branches                  |
+| Can cause conflicts that need to be resolved per-commit              | Can cause conflicts but usually resolved all at once during the merge |
+
+  
+
+</details>
+
+
 </details>
 
 
