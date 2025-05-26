@@ -1476,6 +1476,7 @@ git switch feature-b
 
 In feature-a:
 ```
+git switch feature-a
 echo "Hello from feature-a" > greetings.txt
 git add greetings.txt
 git commit -m "Add greetings.txt in feature-a"
@@ -1483,6 +1484,7 @@ git commit -m "Add greetings.txt in feature-a"
 
 In feature-b:
 ```
+git switch feature-b
 echo "Hello from feature-b" > greetings.txt
 git add greetings.txt
 git commit -m "Add greetings.txt in feature-b"
@@ -1521,16 +1523,47 @@ git merge feature-b
 You will see a conflict like this:
 
 ```
-CONFLICT (content): Merge conflict in greetings.txt
+Auto-merging greetings.txt
+CONFLICT (add/add): Merge conflict in greetings.txt
 Automatic merge failed; fix conflicts and then commit the result.
 ```
 
 - Resolve the conflict using either command-line or VS Code
 
+To view the conflict markers in the file, run:
+```
+cat greetings.txt
+```
+
+This will display something like:
+
+![image](https://github.com/user-attachments/assets/ebf70b30-38f1-4efe-bc2e-3801f8c8572c)
+
+To edit the file and resolve the conflict, open it with Vim:
+```
+vim greetings.txt
+```
+![image](https://github.com/user-attachments/assets/7f5b6b2d-4a18-4007-a9b0-c235a571a845)
+
+After editing the file, the conflict is resolved like this:
+![image](https://github.com/user-attachments/assets/8e9c7113-495f-44d5-a3d4-2d0b3f30413d)
+
+after saved greetings.txt file
+
+```
+git add greetings.txt
+git commit -m "merged feature-b into feature-a"
+```
+
 
 ## Task 3: Rebase and Cherry-Pick
 
 - Use git rebase to reapply commits from feature-a onto main
+
+  view the graph of the commits, we want that will be linear
+  ```
+  git log --oneline --graph --all
+  ```
 
   Switch to feature-a:
   ```
@@ -1573,7 +1606,39 @@ Automatic merge failed; fix conflicts and then commit the result.
 | Ideal for **cleaning up** a feature branch before merging            | Ideal for **combining work** from different branches                  |
 | Can cause conflicts that need to be resolved per-commit              | Can cause conflicts but usually resolved all at once during the merge |
 
-  
+
+## GitHub Pull Requests & Code Review
+
+- Push both branches (feature-a, feature-b) to your GitHub repository
+
+  Push feature-a:
+  ```
+  git switch feature-a
+  git push -u origin feature-a
+  ```
+
+  Push feature-b:
+  ```
+  git switch feature-b
+  git push -u origin feature-b
+  ```
+
+- Create a pull request from one branch into main
+  - Go to your GitHub repository.
+  - Click on the "Compare & pull request" button for feature-a (or feature-b).
+  - Set the base branch to main and the compare branch to feature-a.
+  - Click "Create pull request".
+  - Add a meaningful title and description explaining your changes.
+ 
+- Request a review from a classmate or mentor
+  - On your pull request page, click "Reviewers" in the sidebar.
+  - Select a classmate or mentor from the list to request their review.
+ 
+- Write at least one constructive code comment in someone else's pull request
+  - Go to a classmate’s pull request on GitHub.
+  - Click on "Files changed".
+  - Add a comment on a specific line of code (click the + icon).
+  - Your comment should be constructive
 
 </details>
 
