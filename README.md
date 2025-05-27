@@ -1648,7 +1648,57 @@ git commit -m "merged feature-b into feature-a"
   - Click on "Files changed".
   - Add a comment on a specific line of code (click the + icon).
   - Your comment should be constructive
+ 
 
+## Task 5: Stash, Amend, and Cleanup
+
+- Make local changes and store them using git stash
+
+  Make a change to a file, for example:
+  ```
+  echo "Temporary changes" >> greetings.txt
+  ```
+  
+  Check the change:
+  ```
+  git status
+  ```
+
+  Stash the changes:
+  ```
+  git stash
+  ```
+
+  our working directory is now clean again.
+  You can view your stash with:
+
+  git stash list
+
+- Restore the changes using git stash pop
+  
+  To bring your stashed changes back:
+  ```
+  git stash pop
+  ```
+  
+  This restores the latest stashed changes and removes them from the stash stack.
+
+- Amend your last commit using git commit --amend
+
+  Make a small additional change:
+  ```
+  echo "Fix bug and change commit" >> greetings.txt
+  git add notes.txt
+  ```
+  
+  Amend the last commit:
+  ```
+  git commit --amend
+  ```
+
+  You’ll enter your editor to modify the commit message (or keep it the same and save). <br />
+  This replaces the last commit with a new one that includes the updated changes.
+  
 </details>
 
 
