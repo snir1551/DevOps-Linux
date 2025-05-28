@@ -5,6 +5,7 @@ LOG_DIR=""
 CSV_REPORT_FILE="report.csv"
 REPORT_FILE="report.txt"
 IS_INTERACTIVE=false
+USE_COLOR=true
 
 RED="\033[0;31m"
 GREEN="\033[0;32m"
@@ -22,18 +23,18 @@ NC="\033[0m"
 function count_keywords() {
 
 	local file="$1"
-	echo "Log File: $file" >> "$REPORT_FILE"
-	printf "%-10s | %-10s\n" "Keyword" "Occurrences" >> "$REPORT_FILE"
-	echo "------------------------" >> "$REPORT_FILE"
+	echo "Log File: $file" | tee -a "$REPORT_FILE"
+	printf "%-10s | %-10s\n" "Keyword" "Occurrences" | tee -a "$REPORT_FILE"
+	echo "------------------------" | tee -a "$REPORT_FILE"
 	echo "File,Keyword,Occurrences" >> "$CSV_REPORT_FILE"
 
 	for keyword in "${KEYWORDS[@]}"; do
 		count=$(grep -o "$keyword" "$file" | wc -l)
-		printf "%-10s | %-10d\n" "$keyword" "$count" >> "$REPORT_FILE"
+		printf "%-10s | %-10d\n" "$keyword" "$count" | tee -a "$REPORT_FILE"
 		echo "$file,$keyword,$count" >> "$CSV_REPORT_FILE"
     	done
 
-    	echo "" >> "$REPORT_FILE"
+    	echo "" | tee -a "$REPORT_FILE"
 }
 
 # ============================================
@@ -51,6 +52,7 @@ function print_help() {
 	printf "  %-15s %s\n" "--logdir"   "Directory containing .log files to analyze."
 	printf "  %-15s %s\n" "--help"     "Show this help message and exit."
 	printf "  %-15s %s\n" "--interactive"     "Ask for inputs step-by-step instead of using command-line flags."
+	printf "  %-15s %s\n" "--no-color" "Disable color output for cleaner logs or scripting."
 
 	echo ""
 	echo "Example:"
@@ -88,17 +90,17 @@ function validate_input() {
 # ============================================
 function generate_report() {
 
-	echo "LOG REPORT" > "$REPORT_FILE"
-    	echo "Directory: $LOG_DIR" >> "$REPORT_FILE"
-    	echo "Keywords: ${KEYWORDS[*]}" >> "$REPORT_FILE"
-    	echo "Generated at: $(date)" >> "$REPORT_FILE"
-    	echo "" >> "$REPORT_FILE"
+	echo "LOG REPORT" | tee "$REPORT_FILE"
+    	echo "Directory: $LOG_DIR" | tee -a "$REPORT_FILE"
+    	echo "Keywords: ${KEYWORDS[*]}" | tee -a "$REPORT_FILE"
+    	echo "Generated at: $(date)" | tee -a "$REPORT_FILE"
+    	echo "" | tee -a "$REPORT_FILE"
 
     	find "$LOG_DIR" -type f -name "*.log" | while read -r file; do
         	count_keywords "$file"
     	done
 
-	 echo -e "${GREEN}Report generated successfully!${NC}"
+	echo -e "${GREEN}Report generated successfully!${NC}"
 }
 
 # ============================================
@@ -126,6 +128,10 @@ function parse_arguments() {
                 		;;
 	    		--interactive)
                 		IS_INTERACTIVE=true
+                		shift
+                		;;
+			--no-color)
+                		USE_COLOR=false
                 		shift
                 		;;
             		--help)
@@ -156,6 +162,20 @@ function prompt_for_inputs() {
     	echo ""
 }
 
+function setup_colors() {
+    if [ "$USE_COLOR" = false ]; then
+        RED=""
+        GREEN=""
+        YELLOW=""
+        NC=""
+    else
+        RED="\033[0;31m"
+        GREEN="\033[0;32m"
+        YELLOW="\033[1;33m"
+        NC="\033[0m"
+    fi
+}
+
 # ============================================
 # AdvancedLogReportAutomation
 # Description: Main function.
@@ -179,11 +199,11 @@ function AdvancedLogReportAutomation() {
 	generate_report
 
 	END_TIME=$(date +%s.%N)
-  	RUNTIME=$(echo "$END_TIME - $START_TIME" | bc) 
+  	RUNTIME=$(echo "$END_TIME - $START_TIME" | bc | awk '{ printf "%.3f", $0 }') 
 
-	echo -e "${YELLOW}Total Execution Time: ${RUNTIME}s${NC}"
+	
 
-    	printf "Total Execution Time: %.3fs\n" "$RUNTIME" >> "$REPORT_FILE"    
+    	printf "Total Execution Time: %.3f seconds\n" "$RUNTIME" | tee -a "$REPORT_FILE"   
 }
 
 AdvancedLogReportAutomation $@
