@@ -22,8 +22,6 @@ jobs:
       id: start_time
       run: echo "start_time=$(date +%s)" >> $GITHUB_OUTPUT
 
-
-    steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
 
