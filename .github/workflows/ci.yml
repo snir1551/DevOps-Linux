@@ -76,7 +76,7 @@ jobs:
       with:
         payload: |
           {
-            "text": " *Job `${{ github.job }}` succeeded!*\n• Repo: `${{ github.repository }}`\n• Branch: `${{ github.ref_name }}`\n• Actor: `${{ github.actor }}`"
+            "text": " *Job:* Frontend (Node.js `${{ matrix.node-version }}`)\n• *Status:* `${{ job.status }}`\n• *Duration:* `${{ env.JOB_DURATION }}` seconds\n• *Workflow:* `${{ github.workflow }}`\n• *Run:* #${{ github.run_number }}\n• *Repo:* `${{ github.repository }}`"
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -87,7 +87,7 @@ jobs:
       with:
         payload: |
           {
-            "text": " *Job `${{ github.job }}` failed!*\n• Repo: `${{ github.repository }}`\n• Branch: `${{ github.ref_name }}`\n• Actor: `${{ github.actor }}`"
+             "text": " *Job FAILED!*\n*Job:* Frontend (Node.js `${{ matrix.node-version }}`)\n• *Status:* `${{ job.status }}`\n• *Duration:* `${{ env.JOB_DURATION }}` seconds\n• *Workflow:* `${{ github.workflow }}`\n• *Run:* #${{ github.run_number }}\n• *Repo:* `${{ github.repository }}`"
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -155,7 +155,7 @@ jobs:
       with:
         payload: |
           {
-            "text": "*Job:* Backend (Node.js ${{ matrix.node-version }})\n*Status:* ${{ job.status }}\n*Duration:* ${{ env.JOB_DURATION }} seconds\n*Workflow:* ${{ github.workflow }}\n*Run:* #${{ github.run_number }}\n*Repo:* ${{ github.repository }}"
+            "text": " *Job:* Frontend (Node.js `${{ matrix.node-version }}`)\n• *Status:* `${{ job.status }}`\n• *Duration:* `${{ env.JOB_DURATION }}` seconds\n• *Workflow:* `${{ github.workflow }}`\n• *Run:* #${{ github.run_number }}\n• *Repo:* `${{ github.repository }}`"
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -166,7 +166,7 @@ jobs:
       with:
         payload: |
           {
-            "text": "*Job:* Frontend (Node.js ${{ matrix.node-version }})\n*Status:* ${{ job.status }}\n*Duration:* ${{ env.JOB_DURATION }} seconds\n*Workflow:* ${{ github.workflow }}\n*Run:* #${{ github.run_number }}\n*Repo:* ${{ github.repository }}"
+            "text": " *Job FAILED!*\n*Job:* Frontend (Node.js `${{ matrix.node-version }}`)\n• *Status:* `${{ job.status }}`\n• *Duration:* `${{ env.JOB_DURATION }}` seconds\n• *Workflow:* `${{ github.workflow }}`\n• *Run:* #${{ github.run_number }}\n• *Repo:* `${{ github.repository }}`"
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
