@@ -1812,11 +1812,20 @@ and also make the work faster and more efficient by allowing each of the collabo
 ******
 
 <details>
-<summary>Week 5 – Summary Task: GitHub Actions and CI/CD</summary>
+<summary>Week 5 – Daily Practice Tasks (CI/CD with GitHub Actions)</summary>
 <br />
 https://github.com/snir1551/DevOps-Linux/wiki/Week-5-%E2%80%93-Daily-Practice-Tasks-(CI-CD-with-GitHub-Actions)
 </details>
 
+******
+
+<details>
+<summary>Week 5 – Summary Task: GitHub Actions and CI/CD</summary>
+<br />
+https://github.com/snir1551/week5-ci-cd/
+</details>
+
+******
 
 </details>
 
