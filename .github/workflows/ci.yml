@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - "**"
+    paths:
+      - "week5_practice/**"
   pull_request:
     branches:
       - "**"
+    paths:
+      - "week5_practice/**"
         
   
 jobs:
