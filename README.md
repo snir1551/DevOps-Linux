@@ -22,147 +22,32 @@
 
 <details>
 <summary>The Hierarchical Tree Structure in Linux File System</summary>
+	
 [The Hierarchical Tree Structure in Linux File System](https://github.com/snir1551/DevOps-Linux/wiki/The-Hierarchical-Tree-Structure-in-Linux-File-System)
+
 </details>
+
+----------------------------------------------------------------------------------------------------------------------------
 
 <details> 
 <summary>inode in Linux</summary>
 
-## inode in Linux
+[inode in Linux](https://github.com/snir1551/DevOps-Linux/wiki/inode-in-Linux)
 
-### Definition
-An inode (short for index node) is a fundamental data structure in the Linux file system that represents each file, directory, or object stored on the disk. <br />
-Every file in the system is assigned a unique inode number that serves as its identifier.
-
-### Important:
-An inode does not store the file’s name. The file name is stored in a directory entry that maps the name to the corresponding inode.
-
-### inode Contain
-
-| Field              | Description                                                               |
-| ------------------ | ------------------------------------------------------------------------- |
-| **mode**           | File type (regular file, directory, symlink, etc.) and permissions (rwx). |
-| **uid**            | User ID (owner of the file).                                              |
-| **gid**            | Group ID (group ownership).                                               |
-| **size**           | Size of the file in bytes.                                                |
-| **timestamps**     | Access (atime), modification (mtime), and change (ctime) times.           |
-| **block pointers** | Pointers to the data blocks where the file content is stored.             |
-| **link count**     | Number of hard links pointing to this inode.                              |
-
-
-### The Relationship Between a File Name and an inode
-
-- The file name is stored in a directory entry along with the inode number.
-- When you access a file, the system looks up the file name in the directory, retrieves the inode number, and then uses the inode to locate the actual data blocks.
-- For example: ls -i /etc/passwd → Shows the inode number of the file /etc/passwd.
-
-### Example of How it Works
-1. You run the command: cat /etc/passwd
-2. The system searches for the file passwd in the /etc directory.
-3. It finds the inode number corresponding to passwd.
-4. The system uses the inode to locate and read the file’s data blocks.
-5. The contents are displayed.
-
-
-
-
-<br />
 </details>	
+
+
+----------------------------------------------------------------------------------------------------------------------------
 
 
 <details> 
 <summary>File Permissions in Linux</summary>
 
-##  File Permissions in Linux
+[File Permissions in Linux](https://github.com/snir1551/DevOps-Linux/wiki/File-Permissions-in-Linux)
 
-Permissions control who can access files and directories in Linux, and what they are allowed to do with them.
-This is a critical part of Linux security and multi-user management.
-
-### The Three Levels of Access
-
-Each file and directory in Linux has three sets of permissions:
-- User (Owner) → The person who owns the file.
-- Group → A group of users who share access rights.
-- Others → All other users on the system.
-
-For each level, there are three types of permissions:
-
-| Symbol | Permission | Meaning                                                     |
-| ------ | ---------- | ----------------------------------------------------------- |
-| `r`    | Read       | Can view the contents of a file / list a directory.         |
-| `w`    | Write      | Can modify a file / create and delete files in a directory. |
-| `x`    | Execute    | Can run a file (if executable) / enter a directory.         |
-
-### Example of File Permissions
-
-Let’s look at the output of ls -l:
-
-```
--rwxr-xr--
-```
-
-| Section        | Meaning                                             |
-| -------------- | --------------------------------------------------- |
-| `-`            | File type: `-` for regular file, `d` for directory. |
-| `rwx` (user)   | Owner can read, write, and execute.                 |
-| `r-x` (group)  | Group can read and execute.                         |
-| `r--` (others) | Others can only read.                               |
-
-### Numeric (Octal) Representation
-
-Permissions can also be represented using octal numbers:
-- r = 4
-- w = 2
-- x = 1
-
-For example:
-- -rwxr-xr--  =  754
-
-Explanation:
-
-- Owner: rwx → 4+2+1 = 7
-
-- Group: r-x → 4+0+1 = 5
-
-- Others: r-- → 4+0+0 = 4
-
-
-### Common Permission Commands
-
-| Command | Description                            |
-| ------- | -------------------------------------- |
-| `chmod` | Change file permissions.               |
-| `chown` | Change file owner.                     |
-| `chgrp` | Change file group.                     |
-| `umask` | Set default permissions for new files. |
-
-### chmod Usage Examples
-
-| Command                 | Effect                                           |
-| ----------------------- | ------------------------------------------------ |
-| `chmod 755 myfile`      | Set permissions: owner=rwx, group=rx, others=rx. |
-| `chmod u+x myscript.sh` | Add execute permission for the user (owner).     |
-| `chmod g-w myfile`      | Remove write permission from group.              |
-| `chmod o=r myfile`      | Set others to read-only.                         |
-
- ### Special Permissions
-
-Linux also supports special permissions for specific use cases:
-- Set-UID (s) → Run a file with the permissions of its owner.
-- Set-GID (s) → Run a file with the group’s permissions.
-- Sticky Bit (t) → Restrict deletion of files in shared directories (like /tmp).
-
-Example (with ls -l):
-
-```
--rwsr-xr-x   (Set-UID on a file)
-drwxrwxrwt   (Sticky bit on a directory)
-```
-
-
-
-<br />
 </details>
+
+----------------------------------------------------------------------------------------------------------------------------
 
 <details> 
 <summary>Special Permissions in Linux</summary>
