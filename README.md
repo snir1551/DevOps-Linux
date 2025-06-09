@@ -13,7 +13,7 @@
 <details> 
 <summary>What is DevOps & Agile methodology</summary>
 <br />
-[DevOps & Agile methodology](https://github.com/snir1551/DevOps-Linux/wiki/What-is-DevOps-&-Agile-methodology)
+[DevOps & Agile methodology](https://github.com/snir1551/DevOps-Linux/wiki/What-is-DevOps-and-Agile-methodology)
 
 </details>
 
