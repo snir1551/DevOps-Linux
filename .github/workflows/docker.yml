@@ -1,0 +1,111 @@
+name: Build and Deploy Docker App
+
+on:
+  push:
+    branches:
+      - main 
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx (Recommended for multi-arch builds)
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and Push Docker Image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: |
+          your_dockerhub_username/myapp:latest
+          your_dockerhub_username/myapp:${{ github.sha }}
+
+    # *** השלב החשוב שהיה חסר: הרצת Docker Compose ***
+    - name: Bring up services with Docker Compose
+      run: |
+        echo "MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_USERNAME }}" > .env
+        echo "MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_PASSWORD }}" >> .env
+        echo "PORT=3000" >> .env
+        echo "MONGO_HOST=mongodb" >> .env # חשוב שזה יהיה שם השירות ב-docker-compose
+
+        # הרץ את docker compose. -d למצב detached, --build יבנה את האימג'ים (אם לא נבנו)
+        # וודא שהאימג' ב-docker-compose.yml מפנה לשם האימג' שזה עתה דחפת (לדוגמה your_dockerhub_username/myapp:latest)
+        docker compose up -d
+
+    # שלב נוסף: המתנה שהקונטיינר יהיה Healthy (אופציונלי, לבדיקות אינטגרציה)
+    - name: Wait for Webapp to be healthy
+      run: |
+        echo "Waiting for webapp container to be healthy..."
+        timeout=300 # Wait for up to 5 minutes
+        while [[ $(docker inspect webapp --format '{{.State.Health.Status}}') != "healthy" && $timeout -gt 0 ]]; do
+          sleep 10
+          timeout=$((timeout - 10))
+          echo "Waiting... ($timeout seconds left)"
+        done
+        if [[ $(docker inspect webapp --format '{{.State.Health.Status}}') != "healthy" ]]; then
+          echo "Webapp did not become healthy within the timeout period. Checking logs..."
+          docker logs webapp # הצג לוגים לעזרה בניפוי באגים
+          exit 1
+        else
+          echo "Webapp is healthy!"
+        fi
+
+    - name: Send Slack Notification
+      uses: slackapi/slack-github-action@v1.26.0
+      with:
+        payload: |
+          {
+            "text": "Deployment Update for `${{ github.repository }}`",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": ":rocket: *Deployment Status: ${{ job.status == 'success' && ':white_check_mark: Success' || ':x: Failure' }}*"
+                }
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Repository:*\n`${{ github.repository }}`"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Branch:*\n`${{ github.ref_name }}`"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Commit:*\n<${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}>"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Triggered by:*\n`${{ github.actor }}`"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Workflow Run:*\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|#${{ github.run_number }}>"
+                  }
+                ]
+              }
+            ]
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+    - name: Clean up Docker Compose services (important!)
+      if: always() 
+      run: docker compose down -v
