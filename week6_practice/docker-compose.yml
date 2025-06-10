@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:8.0.10
+    container_name: mongodb
+    restart: always
+    env_file: 
+      - .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - mynet
+
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: myapp:1.0.0
+    container_name: webapp
+    restart: always
+    env_file:
+      - .env
+    environment:
+      PORT: ${PORT}
+      MONGO_HOST: mongodb
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+    networks:
+      - mynet
+
+volumes:
+  mongo-data:
+
+networks:
+  mynet:
+    driver: bridge
