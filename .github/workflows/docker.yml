@@ -1,68 +1,75 @@
-name: Build and Deploy Docker App
+name: Docker CI/CD Pipeline
 
 on:
   push:
     branches:
-      - main 
+      - main
 
 jobs:
-  build-and-deploy:
+  build-test-deploy:
     runs-on: ubuntu-latest
+
+    outputs:
+      webapp_health_status: ${{ steps.wait_for_health.outputs.health_status }}
 
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name: Set up Docker Buildx (Recommended for multi-arch builds)
+    - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Prepare .env file for Docker Compose
+      run: |
+        echo "MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_USERNAME }}" > ./week6_practice/.env
+        echo "MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_PASSWORD }}" >> ./week6_practice/.env
+        echo "PORT=3000" >> ./week6_practice/.env
+        echo "MONGO_HOST=mongodb" >> ./week6_practice/.env
 
-    - name: Build and Push Docker Image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: ./Dockerfile
-        push: true
-        tags: |
-          your_dockerhub_username/myapp:latest
-          your_dockerhub_username/myapp:${{ github.sha }}
-
-    # *** השלב החשוב שהיה חסר: הרצת Docker Compose ***
     - name: Bring up services with Docker Compose
       run: |
-        echo "MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_USERNAME }}" > .env
-        echo "MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_PASSWORD }}" >> .env
-        echo "PORT=3000" >> .env
-        echo "MONGO_HOST=mongodb" >> .env # חשוב שזה יהיה שם השירות ב-docker-compose
+        docker compose -f ./week6_practice/docker-compose.yml up -d
 
-        # הרץ את docker compose. -d למצב detached, --build יבנה את האימג'ים (אם לא נבנו)
-        # וודא שהאימג' ב-docker-compose.yml מפנה לשם האימג' שזה עתה דחפת (לדוגמה your_dockerhub_username/myapp:latest)
-        docker compose up -d
-
-    # שלב נוסף: המתנה שהקונטיינר יהיה Healthy (אופציונלי, לבדיקות אינטגרציה)
     - name: Wait for Webapp to be healthy
+      id: wait_for_health
       run: |
         echo "Waiting for webapp container to be healthy..."
-        timeout=300 # Wait for up to 5 minutes
-        while [[ $(docker inspect webapp --format '{{.State.Health.Status}}') != "healthy" && $timeout -gt 0 ]]; do
+        timeout_seconds=300
+        start_time=$(date +%s)
+
+        FINAL_HEALTH_STATUS="unknown"
+
+        while true; do
+          current_status=$(docker inspect webapp --format '{{.State.Health.Status}}' 2>/dev/null || echo "not_found")
+
+          if [ "$current_status" == "healthy" ]; then
+            echo "Webapp is healthy!"
+            FINAL_HEALTH_STATUS="healthy"
+            break
+          elif [ "$current_status" == "not_found" ]; then
+            echo "Webapp container not found yet. Retrying..."
+          else
+            echo "Webapp status: $current_status. Waiting..."
+          fi
+
+          current_time=$(date +%s)
+          elapsed_time=$((current_time - start_time))
+
+          if [ "$elapsed_time" -ge "$timeout_seconds" ]; then
+            echo "Webapp did not become healthy within the timeout period."
+            echo "Dumping webapp logs for debugging:"
+            docker logs webapp
+            FINAL_HEALTH_STATUS="unhealthy"
+            exit 1
+          fi
+
           sleep 10
-          timeout=$((timeout - 10))
-          echo "Waiting... ($timeout seconds left)"
         done
-        if [[ $(docker inspect webapp --format '{{.State.Health.Status}}') != "healthy" ]]; then
-          echo "Webapp did not become healthy within the timeout period. Checking logs..."
-          docker logs webapp # הצג לוגים לעזרה בניפוי באגים
-          exit 1
-        else
-          echo "Webapp is healthy!"
-        fi
+
+        echo "health_status=$FINAL_HEALTH_STATUS" >> "$GITHUB_OUTPUT"
 
     - name: Send Slack Notification
+      if: always()
       uses: slackapi/slack-github-action@v1.26.0
       with:
         payload: |
@@ -79,33 +86,19 @@ jobs:
               {
                 "type": "section",
                 "fields": [
-                  {
-                    "type": "mrkdwn",
-                    "text": "*Repository:*\n`${{ github.repository }}`"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "*Branch:*\n`${{ github.ref_name }}`"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "*Commit:*\n<${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}>"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "*Triggered by:*\n`${{ github.actor }}`"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "*Workflow Run:*\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|#${{ github.run_number }}>"
-                  }
+                  { "type": "mrkdwn", "text": "*Repository:*\n`${{ github.repository }}`" },
+                  { "type": "mrkdwn", "text": "*Branch:*\n`${{ github.ref_name }}`" },
+                  { "type": "mrkdwn", "text": "*Commit:*\n<${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha | truncate(7, '') }}>" },
+                  { "type": "mrkdwn", "text": "*Triggered by:*\n`${{ github.actor }}`" },
+                  { "type": "mrkdwn", "text": "*Workflow Run:*\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|#${{ github.run_number }}>" },
+                  { "type": "mrkdwn", "text": "*Webapp Health:*\n`${{ steps.wait_for_health.outputs.health_status }}`" }
                 ]
               }
             ]
           }
       env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_Docker }}
 
-    - name: Clean up Docker Compose services (important!)
-      if: always() 
-      run: docker compose down -v
+    - name: Clean up Docker Compose services
+      if: always()
+      run: docker compose -f ./week6_practice/docker-compose.yml down -v
