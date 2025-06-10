@@ -17,13 +17,13 @@ jobs:
 
       - name: Prepare .env file for Docker Compose
         run: |
-          echo "MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_USERNAME }}" > .env
-          echo "MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_PASSWORD }}" >> .env
-          echo "PORT=3000" >> .env
-          echo "MONGO_HOST=mongodb" >> .env
+          echo "MONGO_INITDB_ROOT_USERNAME=${{ secrets.MONGO_USERNAME }}" > week6_practice/.env
+          echo "MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_PASSWORD }}" >> week6_practice/.env
+          echo "PORT=3000" >> week6_practice/.env
+          echo "MONGO_HOST=mongodb" >> week6_practice/.env
 
       - name: Build and Run Docker Compose
-        run: docker compose up -d
+        run: docker compose -f week6_practice/docker-compose.yml up -d
 
       - name: Wait for Webapp to be healthy
         id: wait_for_health
@@ -66,4 +66,4 @@ jobs:
 
       - name: Clean up Docker Compose services
         if: always()
-        run: docker compose down -v
+        run: docker compose -f week6_practice/docker-compose.yml down -v
