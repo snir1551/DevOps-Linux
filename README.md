@@ -939,9 +939,8 @@ https://github.com/snir1551/DevOps-Linux/wiki/Week-6-%E2%80%93-Docker-&-Containe
 <summary>Week 6 – Summary Task: Docker & Containerization </summary>
 <br />
 
-[week5-Docker-Containerization](https://github.com/snir1551/week5-ci-cd/)
+[week6-Docker-Containerization](https://github.com/snir1551/week5-ci-cd/)
 
-https://github.com/snir1551/week5-ci-cd/tree/dockercompose
 </details>
 
 ******
