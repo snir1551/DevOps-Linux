@@ -918,7 +918,30 @@ https://github.com/snir1551/DevOps-Linux/wiki/Week-5-%E2%80%93-Daily-Practice-Ta
 <details>
 <summary>Week 5 – Summary Task: GitHub Actions and CI/CD</summary>
 <br />
-https://github.com/snir1551/week5-ci-cd/
+	
+[week5-ci-cd](https://github.com/snir1551/week5-ci-cd/tree/dockercompose)
+
+</details>
+
+******
+
+<details>
+<summary>Week 6 – Docker & Containers: Daily Practice Tasks</summary>
+<br />
+
+https://github.com/snir1551/DevOps-Linux/wiki/Week-6-%E2%80%93-Docker-&-Containers:-Daily-Practice--Tasks
+
+</details>
+
+******
+
+<details>
+<summary>Week 6 – Summary Task: Docker & Containerization </summary>
+<br />
+
+[week5-Docker-Containerization](https://github.com/snir1551/week5-ci-cd/)
+
+https://github.com/snir1551/week5-ci-cd/tree/dockercompose
 </details>
 
 ******
