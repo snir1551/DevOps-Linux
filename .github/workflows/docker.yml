@@ -2,7 +2,15 @@ name: Docker CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - "**"
+    paths:
+      - "week6_practice/**"
+  pull_request:
+    branches:
+      - "**"
+    paths:
+      - "week6_practice/**"
 
 jobs:
   build-test-deploy:
