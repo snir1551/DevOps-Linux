@@ -35,7 +35,7 @@ jobs:
         working-directory: ./week7_practice
         run: |
           sleep 5
-          docker-compose ps
+          docker compose ps
           docker inspect --format='{{json .State.Health}}' week7_practice-backend-1
 
       - name: Run backend tests
