@@ -16,7 +16,7 @@ export default function Users() {
   const [email, setEmail] = useState('');
 
   const fetchUsers = async () => {
-    const res = await fetch('http://localhost:3001/api/users');
+    const res = await fetch('${API_BASE_URL}/api/users');
     setUsers(await res.json());
   };
 
@@ -60,7 +60,7 @@ export default function Users() {
         </button>
       </form>
       <hr style={{ margin: '24px 0' }} />
-      <h3 style={{ textAlign: 'center' }}>משתמשים קיימים</h3>
+      <h3 style={{ textAlign: 'center' }}>Exist Users</h3>
       <ul style={{ listStyle: 'none', padding: 0 }}>
         {users.map(u => (
           <li key={u._id} style={{ background: '#fff', margin: '8px 0', padding: 10, borderRadius: 6, boxShadow: '0 1px 3px #0001' }}>
