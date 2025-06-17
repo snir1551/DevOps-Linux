@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
+//const API_BASE_URL = 'http://localhost:3001'; // this is local
+const API_BASE_URL = `http://20.217.201.167:3001`; // this is azure vm
+
 type User = {
   _id: string;
   name: string;
@@ -23,7 +26,7 @@ export default function Users() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await fetch('http://localhost:3001/api/users', {
+    await fetch('${API_BASE_URL}/api/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email }),
@@ -35,7 +38,7 @@ export default function Users() {
 
   return (
     <div style={{ maxWidth: 400, margin: '2rem auto', background: '#f9f9f9', borderRadius: 12, padding: 24, boxShadow: '0 2px 8px #0001' }}>
-      <h2 style={{ textAlign: 'center' }}>הרשמת משתמשים</h2>
+      <h2 style={{ textAlign: 'center' }}>Register</h2>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <input
           placeholder="שם"
