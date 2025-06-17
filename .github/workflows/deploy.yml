@@ -28,7 +28,7 @@ jobs:
       - name: Deploy with Docker Compose
         run: |
           ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "
-            cd /home/snir1551/week7_practice &&
+            cd /home/snir1551/week7practice &&
             docker compose down --remove-orphans &&
             docker compose up -d --build
           "
