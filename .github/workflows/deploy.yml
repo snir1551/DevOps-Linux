@@ -29,8 +29,8 @@ jobs:
         run: |
           ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "
             cd /home/snir1551/week7practice &&
-            docker-compose down --remove-orphans &&
-            docker-compose up -d --build
+            sudo docker-compose down --remove-orphans &&
+            sudo docker-compose up -d --build
           "
 
       - name: Healthcheck & logs
