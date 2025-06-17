@@ -36,6 +36,7 @@ jobs:
       - name: Healthcheck & logs
         run: |
           ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "
+            cd /home/snir1551/week7practice
             sudo docker-compose ps
             sudo docker-compose logs --tail=50
           " > remote_logs.txt
