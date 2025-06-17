@@ -29,7 +29,7 @@ jobs:
 
       - name: Build and start services
         working-directory: ./week7_practice
-        run: docker-compose up -d --build
+        run: docker compose up -d --build
 
       - name: Wait for containers to be healthy
         working-directory: ./week7_practice
@@ -40,13 +40,13 @@ jobs:
 
       - name: Run backend tests
         working-directory: ./week7_practice
-        run: docker-compose exec backend npm test
+        run: docker compose exec backend npm test
 
       - name: Collect logs if tests fail
         if: failure()
         working-directory: ./week7_practice
         run: |
-          docker-compose logs > docker-logs.txt
+          docker compose logs > docker-logs.txt
 
       - name: Upload logs
         if: always()
@@ -57,4 +57,4 @@ jobs:
 
       - name: Shut down
         working-directory: ./week7_practice
-        run: docker-compose down
+        run: docker compose down
