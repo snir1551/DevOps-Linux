@@ -1,4 +1,4 @@
-name: Task 7 CI Pipeline
+name: CI – Test & Build Task7
 
 on:
   push:
