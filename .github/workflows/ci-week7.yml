@@ -53,7 +53,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: docker-logs
-          path: week7_practice/docker-logs.txt
+          path: ./week7_practice/docker-logs.txt
 
       - name: Shut down
         working-directory: ./week7_practice
