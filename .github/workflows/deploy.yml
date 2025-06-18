@@ -21,6 +21,16 @@ jobs:
           echo "${{ secrets.VM_SSH_KEY }}" > key.pem
           chmod 600 key.pem
 
+      - name: Clean Docker on VM
+        run: |
+          ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "
+            echo 'Cleaning Docker environment...' &&
+            sudo docker container prune -f &&
+            sudo docker image prune -af &&
+            sudo docker volume prune -f &&
+            sudo docker network prune -f
+          "
+
       - name: Sync files to Azure VM
         run: |
           ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "mkdir -p /home/snir1551/week7practice"
