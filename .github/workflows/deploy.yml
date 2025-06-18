@@ -1,15 +1,15 @@
 name: CD – Deploy to Azure VM Task7
 
 on:
-  workflow_run:
-    workflows: ["CI – Test & Build Task7"]
-    types:
-      - completed
+  # workflow_run:
+  #   workflows: ["CI – Test & Build Task7"]
+  #   types:
+  #     - completed
   workflow_dispatch:
 
 jobs:
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
