@@ -1,67 +1,19 @@
-# name: CD – Deploy to Azure VM Task7
-
-# on:
-#   # workflow_run:
-#   #   workflows: ["CI – Test & Build Task7"]
-#   #   types:
-#   #     - completed
-#   workflow_dispatch:
-
-# jobs:
-#   deploy:
-#     # if: ${{ github.event.workflow_run.conclusion == 'success' }}
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v4
-
-#       - name: Write SSH key
-#         run: |
-#           echo "${{ secrets.VM_SSH_KEY }}" > key.pem
-#           chmod 600 key.pem
-
-#       - name: Sync files to Azure VM
-#         run: |
-#           ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "mkdir -p /home/snir1551/week7practice"
-#           rsync -az --delete --exclude='.git' --exclude='node_modules' -e "ssh -i key.pem -o StrictHostKeyChecking=no" ./week7_practice/ ${{ secrets.VM_HOST }}:/home/snir1551/week7practice/
-
-#       - name: Deploy with Docker Compose
-#         run: |
-#           ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "
-#             cd /home/snir1551/week7practice &&
-#             sudo docker-compose down --remove-orphans &&
-#             sudo docker-compose up -d --build
-#           "
-
-#       - name: Healthcheck & logs
-#         run: |
-#           ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "
-#             cd /home/snir1551/week7practice
-#             sudo docker-compose ps
-#             sudo docker-compose logs --tail=50
-#           " > remote_logs.txt
-
-#       - name: Upload logs
-#         uses: actions/upload-artifact@v4
-#         with:
-#           name: remote-logs
-#           path: remote_logs.txt
-
-#       - name: Cleanup SSH key
-#         run: rm key.pem
-
 name: CD – Deploy to Azure VM Task7
 
 on:
-  workflow_dispatch:   # manual trigger while testing; switch back to workflow_run later
+  # workflow_run:
+  #   workflows: ["CI – Test & Build Task7"]
+  #   types:
+  #     - completed
+  workflow_dispatch:
 
 jobs:
   deploy:
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Write SSH key
@@ -69,50 +21,34 @@ jobs:
           echo "${{ secrets.VM_SSH_KEY }}" > key.pem
           chmod 600 key.pem
 
-      # 1️⃣ Stop containers and fix permissions before we touch the files
-      - name: Stop app & reset perms on VM
+      - name: Sync files to Azure VM
         run: |
-          ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "
-            # stop and remove any leftover containers
-            cd /home/snir1551/week7practice 2>/dev/null && \
-            sudo docker-compose down --remove-orphans || true
+          ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "mkdir -p /home/snir1551/week7practice"
+          rsync -az --delete --exclude='.git' --exclude='node_modules' -e "ssh -i key.pem -o StrictHostKeyChecking=no" ./week7_practice/ ${{ secrets.VM_HOST }}:/home/snir1551/week7practice/
 
-            # make sure we can write here
-            sudo mkdir -p /home/snir1551/week7practice
-            sudo chown -R $(whoami):$(whoami) /home/snir1551/week7practice
-          "
-
-      # 2️⃣ Sync the current workspace to the VM
-      - name: Sync files to VM with rsync
-        run: |
-          rsync -az --delete \
-            --exclude='.git' \
-            --exclude='node_modules' \
-            -e "ssh -i key.pem -o StrictHostKeyChecking=no" \
-            ./  ${{ secrets.VM_HOST }}:/home/snir1551/week7practice/
-
-      # 3️⃣ Start (or rebuild) the stack
-      - name: Deploy with docker-compose
+      - name: Deploy with Docker Compose
         run: |
           ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "
             cd /home/snir1551/week7practice &&
+            sudo docker-compose down --remove-orphans &&
             sudo docker-compose up -d --build
           "
 
-      # 4️⃣ Quick health / logs snapshot
-      - name: Collect last 50 log lines
+      - name: Healthcheck & logs
         run: |
           ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "
-            cd /home/snir1551/week7practice &&
-            sudo docker-compose ps &&
+            cd /home/snir1551/week7practice
+            sudo docker-compose ps
             sudo docker-compose logs --tail=50
           " > remote_logs.txt
 
-      - name: Upload logs artifact
+      - name: Upload logs
         uses: actions/upload-artifact@v4
         with:
           name: remote-logs
           path: remote_logs.txt
 
-      - name: Clean up key
+      - name: Cleanup SSH key
         run: rm key.pem
+
+
