@@ -945,6 +945,26 @@ https://github.com/snir1551/DevOps-Linux/wiki/Week-6-%E2%80%93-Docker-&-Containe
 
 ******
 
+<details>
+<summary>Week 7 – Daily Practice Tasks - Docker Compose & Azure + VM  </summary>
+<br />
+
+[week7-Docker Compose & Azure + VM](https://github.com/Avichai98/Task7_Snir_Avichai)
+
+</details>
+
+******
+
+<details>
+<summary>Week 7 Summary Task: Docker Compose & Azure + VM</summary>
+<br />
+
+[week7-Docker Compose & Azure + VM](https://github.com/Avichai98/Task7_Snir_Avichai)
+
+</details>
+
+******
+
 </details>
 
 
