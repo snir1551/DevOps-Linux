@@ -111,12 +111,12 @@ function generate_ssh_key() {
   SSH_KEY_PATH="$HOME/.ssh/${VM_NAME}_id_rsa"
 
   if [[ ! -f "$SSH_KEY_PATH" ]]; then
-    echo "[+] Generating SSH key at $SSH_KEY_PATH"
+    echo "Generating SSH key at $SSH_KEY_PATH"
     mkdir -p "$HOME/.ssh"
     ssh-keygen -t rsa -b 2048 -f "$SSH_KEY_PATH" -N ""
-    echo "[+] SSH key created"
+    echo "SSH key created"
   else
-    echo "[*] SSH key already exists at $SSH_KEY_PATH"
+    echo "SSH key already exists at $SSH_KEY_PATH"
   fi
 }
 
@@ -141,7 +141,7 @@ function create_vm() {
 }
 
 function open_ports() {
-  echo "[+] Opening ports: ${PORTS[*]}"
+  echo "Opening ports: ${PORTS[*]}"
 
   NIC_NAME=$(az vm show \
     --resource-group "$RESOURCE_GROUP" \
@@ -157,9 +157,9 @@ function open_ports() {
 
   if [[ -z "$NSG_NAME" ]]; then
     NSG_NAME="${VM_NAME}NSG"
-    echo "[+] Creating NSG: $NSG_NAME"
+    echo "Creating NSG: $NSG_NAME"
     az network nsg create --resource-group "$RESOURCE_GROUP" --name "$NSG_NAME" --location "$LOCATION"
-    echo "[+] Attaching NSG to NIC: $NIC_NAME"
+    echo "Attaching NSG to NIC: $NIC_NAME"
     az network nic update \
       --resource-group "$RESOURCE_GROUP" \
       --name "$NIC_NAME" \
@@ -173,7 +173,7 @@ function open_ports() {
     PRIORITY=$((BASE_PRIORITY + i))
     RULE_NAME="open-port-$PORT"
 
-    echo "[+] Creating NSG rule for port $PORT with priority $PRIORITY"
+    echo "Creating NSG rule for port $PORT with priority $PRIORITY"
     az network nsg rule create \
       --resource-group "$RESOURCE_GROUP" \
       --nsg-name "$NSG_NAME" \
@@ -191,32 +191,32 @@ function open_ports() {
 
 function deploy_app() {
   PUBLIC_IP=$(az vm show --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" --show-details --query publicIps --output tsv)
-  echo "[+] Uploading app to $PUBLIC_IP (excluding node_modules)..."
+  echo "Uploading app to $PUBLIC_IP (excluding node_modules)..."
 
   rsync -avz --exclude 'node_modules' -e "ssh -i $SSH_KEY_PATH -o StrictHostKeyChecking=no" ./app/ "$VM_USER@$PUBLIC_IP:/home/$VM_USER/app"
 
   setup_vm_environment
-  echo "[+] Starting Docker Compose on the VM..."
+  echo "Starting Docker Compose on the VM..."
   ssh -i "$SSH_KEY_PATH" -o StrictHostKeyChecking=no "$VM_USER@$PUBLIC_IP" bash -s << 'EOF'
   cd /home/$USER/app
   sudo docker compose up -d
 EOF
 
-  echo "[✓] App deployed! Access it via: http://$PUBLIC_IP"
+  echo "App deployed! Access it via: http://$PUBLIC_IP"
 }
 
 function cleanup_resources() {
-  echo "[!] Deleting resource group: $RESOURCE_GROUP"
+  echo "Deleting resource group: $RESOURCE_GROUP"
   az group delete --name "$RESOURCE_GROUP" --yes --no-wait
 }
 
 
 function setup_vm_environment() {
-  echo "[+] Setting up environment on VM (Docker + swap)..."
+  echo "Setting up environment on VM (Docker + swap)..."
   ssh -i "$SSH_KEY_PATH" -o StrictHostKeyChecking=no "$VM_USER@$PUBLIC_IP" bash -s << EOF
     # Install Docker & Docker Compose
     if ! command -v docker &> /dev/null; then
-      echo "[+] Installing Docker..."
+      echo "Installing Docker..."
       sudo apt update
       sudo apt install -y ca-certificates curl gnupg lsb-release
 
@@ -230,7 +230,7 @@ function setup_vm_environment() {
       sudo apt update
       sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
     else
-      echo "[✓] Docker is already installed."
+      echo "Docker is already installed."
     fi
 
     # Add swap if missing
@@ -242,7 +242,7 @@ function setup_vm_environment() {
       sudo swapon /swapfile
       echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
     else
-      echo "[✓] Swap already enabled."
+      echo "Swap already enabled."
     fi
 EOF
 }
