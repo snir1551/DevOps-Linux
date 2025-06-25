@@ -8,7 +8,8 @@ on:
 jobs:
   docker-up:
     uses: ./.github/workflows/docker-compose-up-task8.yml
-
+    secrets: inherit
+    
   backend-tests:
     needs: docker-up
     uses: ./.github/workflows/backend-test-task8.yml
