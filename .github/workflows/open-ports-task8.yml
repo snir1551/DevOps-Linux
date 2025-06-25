@@ -1,7 +1,8 @@
-name: Open NSG Ports for Task 8
+name: Open Required Ports Task8
 
 on:
   workflow_call:
+  workflow_dispatch:
 
 jobs:
   open-ports:
@@ -13,32 +14,53 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Open NSG Ports (3000 & 8080)
+      - name: Set variables
         run: |
-          RESOURCE_GROUP="rg-devops-lab"
-          NSG_NAME="Linux-VM01-nsg"
+          echo "RESOURCE_GROUP=rg-devops-lab" >> $GITHUB_ENV
+          echo "NSG_NAME=Linux-VM01-nsg" >> $GITHUB_ENV
 
-          for PORT in 3000 8080; do
-            RULE_NAME="Allow-Port-$PORT"
-            echo "🔍 Checking if rule $RULE_NAME exists..."
-            if az network nsg rule show \
+      - name: Open port 3000 (frontend)
+        run: |
+          echo "🔍 Checking if rule Allow-Port-3000 exists..."
+          if ! az network nsg rule show \
+            --resource-group $RESOURCE_GROUP \
+            --nsg-name $NSG_NAME \
+            --name Allow-Port-3000 &>/dev/null; then
+            echo "Creating rule to allow port 3000"
+            az network nsg rule create \
               --resource-group $RESOURCE_GROUP \
               --nsg-name $NSG_NAME \
-              --name $RULE_NAME &>/dev/null; then
-              echo "Rule $RULE_NAME already exists"
-            else
-              echo "Creating rule to allow port $PORT"
-              az network nsg rule create \
-                --resource-group $RESOURCE_GROUP \
-                --nsg-name $NSG_NAME \
-                --name $RULE_NAME \
-                --priority $((1000 + PORT)) \
-                --direction Inbound \
-                --access Allow \
-                --protocol Tcp \
-                --destination-port-ranges $PORT \
-                --source-address-prefixes '*' \
-                --destination-address-prefixes '*' \
-                --description "Allow traffic on port $PORT"
-            fi
-          done
+              --name Allow-Port-3000 \
+              --priority 100 \
+              --destination-port-ranges 3000 \
+              --direction Inbound \
+              --access Allow \
+              --protocol Tcp \
+              --source-address-prefixes '*' \
+              --destination-address-prefixes '*'
+          else
+            echo "Rule already exists."
+          fi
+
+      - name: Open port 8080 (backend)
+        run: |
+          echo "🔍 Checking if rule Allow-Port-8080 exists..."
+          if ! az network nsg rule show \
+            --resource-group $RESOURCE_GROUP \
+            --nsg-name $NSG_NAME \
+            --name Allow-Port-8080 &>/dev/null; then
+            echo "Creating rule to allow port 8080"
+            az network nsg rule create \
+              --resource-group $RESOURCE_GROUP \
+              --nsg-name $NSG_NAME \
+              --name Allow-Port-8080 \
+              --priority 101 \
+              --destination-port-ranges 8080 \
+              --direction Inbound \
+              --access Allow \
+              --protocol Tcp \
+              --source-address-prefixes '*' \
+              --destination-address-prefixes '*'
+          else
+            echo "Rule already exists."
+          fi
