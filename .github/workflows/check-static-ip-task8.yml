@@ -1,11 +1,11 @@
 name: Check and Set Static Public IP Task8
 
 on:
-  workflow_call:
   workflow_dispatch:
+  workflow_call:
 
 jobs:
-  check-and-update-ip:
+  check-static-ip:
     runs-on: ubuntu-latest
 
     steps:
@@ -14,40 +14,51 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Check and Set Static IP
-        id: check-ip
+      - name: Check and convert IP to static if needed
         run: |
           RESOURCE_GROUP="rg-devops-lab"
           VM_NAME="Linux-VM01"
 
-          # Get NIC ID and name
+          # Get NIC ID
           NIC_ID=$(az vm show \
-            --resource-group $RESOURCE_GROUP \
-            --name $VM_NAME \
+            --resource-group "$RESOURCE_GROUP" \
+            --name "$VM_NAME" \
             --query 'networkProfile.networkInterfaces[0].id' -o tsv)
-          NIC_NAME=$(basename $NIC_ID)
 
-          # Get Public IP ID and name
+          if [ -z "$NIC_ID" ]; then
+            echo "Failed to get NIC ID. Aborting."
+            exit 1
+          fi
+
+          NIC_NAME=$(basename "$NIC_ID")
+
+          # Get Public IP ID
           IP_ID=$(az network nic show \
-            --resource-group $RESOURCE_GROUP \
-            --name $NIC_NAME \
+            --resource-group "$RESOURCE_GROUP" \
+            --name "$NIC_NAME" \
             --query "ipConfigurations[0].publicIpAddress.id" -o tsv)
-          IP_NAME=$(basename $IP_ID)
+
+          if [ -z "$IP_ID" ]; then
+            echo "Failed to get Public IP ID. Aborting."
+            exit 1
+          fi
+
+          IP_NAME=$(basename "$IP_ID")
 
           # Check current allocation method
           ALLOCATION=$(az network public-ip show \
-            --resource-group $RESOURCE_GROUP \
-            --name $IP_NAME \
+            --resource-group "$RESOURCE_GROUP" \
+            --name "$IP_NAME" \
             --query "publicIpAllocationMethod" -o tsv)
 
           echo "Public IP Name: $IP_NAME"
           echo "Current Allocation: $ALLOCATION"
 
           if [ "$ALLOCATION" = "Dynamic" ]; then
-            echo "Converting to Static IP..."
+            echo "🔄 Converting to Static IP..."
             az network public-ip update \
-              --resource-group $RESOURCE_GROUP \
-              --name $IP_NAME \
+              --resource-group "$RESOURCE_GROUP" \
+              --name "$IP_NAME" \
               --allocation-method Static
             echo "IP has been updated to Static."
           else
