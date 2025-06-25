@@ -1,4 +1,4 @@
-name: Check App Port Accessibility Task8
+name: Healthcheck on App Ports Task8
 
 on:
   workflow_dispatch:
