@@ -44,6 +44,11 @@ jobs:
     uses: ./.github/workflows/create-disk-attach.yml
     secrets: inherit
 
+  check-static-ip:
+    needs: deploy
+    uses: ./.github/workflows/check-static-ip.yml
+    secrets: inherit
+
   open-ports:
     needs: deploy
     uses: ./.github/workflows/open-ports-task8.yml
