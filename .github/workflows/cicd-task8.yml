@@ -3,6 +3,8 @@ name: CI/CD Pipeline Task8
 on:
   push:
     branches: [ main ]
+    paths:
+        - 'week8/week8_summery/app/**'
   workflow_dispatch:
 
 jobs:
@@ -40,6 +42,11 @@ jobs:
   open-ports:
     needs: deploy
     uses: ./.github/workflows/open-ports-task8.yml
+    secrets: inherit
+
+  port-access-check:
+    needs: open-ports
+    uses: ./.github/workflows/port-access-check.yml
     secrets: inherit
 
   create-and-attach-disk:
