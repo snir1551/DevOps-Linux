@@ -39,6 +39,11 @@ jobs:
     uses: ./.github/workflows/deploy-task8.yml
     secrets: inherit
 
+  create-and-attach-disk:
+    needs: deploy
+    uses: ./.github/workflows/create-disk-attach.yml
+    secrets: inherit
+
   open-ports:
     needs: deploy
     uses: ./.github/workflows/open-ports-task8.yml
@@ -54,7 +59,6 @@ jobs:
     uses: ./.github/workflows/post-reboot-healthcheck.yml
     secrets: inherit
 
-  create-and-attach-disk:
-    needs: deploy
-    uses: ./.github/workflows/create-disk-attach.yml
-    secrets: inherit
+  update-deployment-log:
+    needs: post-reboot-healthcheck
+    uses: ./.github/workflows/commit-deployment-log.yml
