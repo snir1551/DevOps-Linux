@@ -7,7 +7,7 @@ on:
 
 jobs:
   docker-up:
-    uses: ./.github/workflows/docker-compose-up.yml
+    uses: ./.github/workflows/docker-compose-up-task8.yml
 
   backend-tests:
     needs: docker-up
