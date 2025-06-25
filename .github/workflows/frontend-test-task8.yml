@@ -1,4 +1,4 @@
-name: Frontend Test Task8
+name: Frontend Test
 
 on:
   workflow_dispatch: # Can be run manually
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16, 18, 20]
+        node-version: [18, 20, 22]
     outputs:
       job_start_time: ${{ steps.set_time.outputs.job_start_time }}
 
@@ -36,7 +36,7 @@ jobs:
 
       - name: Install frontend dependencies
         run: |
-          if [ "${{ matrix.node-version }}" \< "18" ]; then
+          if [ "${{ matrix.node-version }}" < "18" ] ; then
             npm install
           else
             npm ci
