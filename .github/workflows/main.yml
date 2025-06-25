@@ -1,0 +1,44 @@
+name: Notify Task8 Status
+
+on:
+  workflow_call:
+    inputs:
+      job_start_time:
+        required: true
+        type: string
+      backend_test_status:
+        required: true
+        type: string
+      frontend_test_status:
+        required: true
+        type: string
+      backend_health:
+        required: true
+        type: string
+      frontend_health:
+        required: true
+        type: string
+    secrets:
+      SLACK_WEBHOOK_URL_TASK8:
+        required: true
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Calculate job duration
+        id: calc
+        run: |
+          END_TIME=$(date +%s)
+          DURATION=$(( END_TIME - ${{ inputs.job_start_time }} ))
+          echo "duration=${DURATION}s" >> $GITHUB_OUTPUT
+
+      - name: Notify Slack (Task8 Summary)
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "text": "*CI/CD Pipeline - Task8 *\n\n* Duration:* `${{ steps.calc.outputs.duration }}`\n\n* Backend Test:* `${{ inputs.backend_test_status }}`\n* Frontend Test:* `${{ inputs.frontend_test_status }}`\n\n* Backend Health:* `${{ inputs.backend_health }}`\n* Frontend Health:* `${{ inputs.frontend_health }}`"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_TASK8 }}
