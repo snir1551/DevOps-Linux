@@ -1,41 +1,48 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import request from 'supertest';
-import mongoose from 'mongoose';
 import express from 'express';
-import User from './User.js';
-import dotenv from 'dotenv';
+import monk from 'monk';
 import cors from 'cors';
 
-// Load env vars
-dotenv.config();
+
+const mockUsers = [];
+const db = {
+  get: () => ({
+    find: async () => [...mockUsers],
+    insert: async (doc) => {
+      mockUsers.push({ ...doc, _id: String(mockUsers.length + 1), createdAt: new Date() });
+      return mockUsers[mockUsers.length - 1];
+    },
+    remove: async () => {
+      mockUsers.length = 0;
+    }
+  }),
+  close: async () => {}
+};
+
+const users = db.get('users');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const mongoUri = process.env.MONGO_INITDB_ROOT_USERNAME
-  ? `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${process.env.MONGO_INITDB_ROOT_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}?authSource=admin`
-  : 'mongodb://localhost:27017/testdb';
-
-beforeAll(async () => {
-  await mongoose.connect(mongoUri);
-  await User.deleteMany({});
-});
-
-afterAll(async () => {
-  await mongoose.disconnect();
-});
-
 app.get('/api/users', async (req, res) => {
-  const users = await User.find().sort({ createdAt: -1 });
-  res.json(users);
+  const allUsers = await users.find({});
+  res.json(allUsers);
 });
 
 app.post('/api/users', async (req, res) => {
   const { name, email } = req.body;
-  const user = new User({ name, email });
-  await user.save();
+  const user = await users.insert({ name, email });
   res.status(201).json(user);
+});
+
+beforeAll(async () => {
+  await users.remove({});
+});
+
+afterAll(async () => {
+  await db.close();
 });
 
 describe('Users API', () => {
