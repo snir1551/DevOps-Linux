@@ -17,6 +17,9 @@ jobs:
           echo "${{ secrets.VM_SSH_KEY }}" > key.pem
           chmod 600 key.pem
 
+      - name: Create .env file
+        run: echo "${{ secrets.ENV_FILE_TASK8 }}" > .env
+
       - name: Clean Docker on VM
         run: |
           ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "
