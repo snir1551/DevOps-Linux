@@ -39,5 +39,5 @@ jobs:
 
   create-and-attach-disk:
     needs: deploy
-    uses: ./.github/workflows/createa-disk-attach.yml
+    uses: ./.github/workflows/create-disk-attach.yml
     secrets: inherit
