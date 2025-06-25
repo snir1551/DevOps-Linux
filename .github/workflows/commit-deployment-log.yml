@@ -1,0 +1,61 @@
+name: Commit and push updated deployment_log.md Task8
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  generate-and-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Create deployment log
+        run: |
+          echo "# Deployment Log" > deployment_log.md
+
+          echo "## zure CLI Commands Used" >> deployment_log.md
+          echo '```bash' >> deployment_log.md
+          echo "az group create --name RG-DEVOPS-LAB --location eastus" >> deployment_log.md
+          echo "az vm create --resource-group RG-DEVOPS-LAB --name Linux-VM01 --image UbuntuLTS --admin-username snir --generate-ssh-keys" >> deployment_log.md
+          echo "az network nsg rule create --resource-group RG-DEVOPS-LAB --nsg-name Linux-VM01NSG --name Allow-Port-3000 --priority 100 --destination-port-ranges 3000 --access Allow --protocol Tcp --direction Inbound" >> deployment_log.md
+          echo "az network nsg rule create --resource-group RG-DEVOPS-LAB --nsg-name Linux-VM01NSG --name Allow-Port-8080 --priority 101 --destination-port-ranges 8080 --access Allow --protocol Tcp --direction Inbound" >> deployment_log.md
+          echo "az disk create --resource-group RG-DEVOPS-LAB --name task8-disk --size-gb 10 --sku Standard_LRS --location eastus" >> deployment_log.md
+          echo "az vm disk attach --resource-group RG-DEVOPS-LAB --vm-name Linux-VM01 --name task8-disk" >> deployment_log.md
+          echo "az vm restart --resource-group RG-DEVOPS-LAB --name Linux-VM01" >> deployment_log.md
+          echo '```' >> deployment_log.md
+
+          echo "## Deployment Steps" >> deployment_log.md
+          echo "- Synced files to VM via rsync over SSH" >> deployment_log.md
+          echo "- Docker Compose used on VM to build and run app" >> deployment_log.md
+          echo "- .env file uploaded securely via GitHub Secrets" >> deployment_log.md
+
+          echo "## Healthcheck" >> deployment_log.md
+          echo "- curl used to test port 3000 and 8080 accessibility" >> deployment_log.md
+
+          echo "## Persistent Disk" >> deployment_log.md
+          echo "- Attached task8-disk to VM (4GB), not mounted or used yet" >> deployment_log.md
+
+          echo "## Reboot & Recovery" >> deployment_log.md
+          echo "- VM rebooted successfully" >> deployment_log.md
+          echo "- Application was verified accessible after reboot" >> deployment_log.md
+
+      - name: Commit and push updated deployment_log.md
+        run: |
+          git config --global user.name "gh-actions"
+          git config --global user.email "github-actions@users.noreply.github.com"
+          git add deployment_log.md
+          git commit -m "Update deployment_log.md [skip ci]" || echo "No changes to commit"
+
+          BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}")
+          if [[ "$GITHUB_REF" == refs/heads/* ]]; then
+            echo "Pushing to branch $BRANCH_NAME..."
+            git push origin HEAD:$GITHUB_REF
+          else
+            echo "Not a branch (probably a tag or detached head), skipping push."
+          fi
