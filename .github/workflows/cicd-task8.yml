@@ -32,9 +32,14 @@ jobs:
 
   deploy:
     name: Deploy to Azure VM
-    needs: [frontend-tests, backend-tests]
+    needs: [frontend-tests, backend-tests, docker-up]
     if: ${{ needs.frontend-tests.result == 'success' && needs.backend-tests.result == 'success' }}
     uses: ./.github/workflows/deploy-task8.yml
+    secrets: inherit
+
+  open-ports:
+    needs: deploy
+    uses: ./.github/workflows/open-ports-task8.yml
     secrets: inherit
 
   create-and-attach-disk:
