@@ -6,14 +6,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  # docker-up:
-  #   uses: ./.github/workflows/docker-compose-up-task8.yml
-  #   secrets: inherit
 
   frontend-tests:
-    # needs: docker-up
     uses: ./.github/workflows/frontend-test-task8.yml
   
   backend-tests:
-    # needs: docker-up
     uses: ./.github/workflows/backend-test-task8.yml
+
+  docker-up:
+    needs: [frontend-tests, backend-tests]
+    uses: ./.github/workflows/docker-up-task8.yml
+    secrets: inherit
