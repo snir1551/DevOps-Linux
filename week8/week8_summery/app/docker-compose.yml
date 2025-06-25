@@ -47,6 +47,7 @@ services:
       - .env
     volumes:
       - mongo-data:/data/db
+    restart: unless-stopped
     networks:
       - appnet
 
