@@ -25,10 +25,12 @@ jobs:
         run: |
           ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "
             echo '🔄 Cleaning Docker environment...' &&
+            sudo docker stop $(docker ps -q) && 
             sudo docker container prune -f &&
             sudo docker image prune -af &&
             sudo docker volume prune -f &&
-            sudo docker network prune -f
+            sudo docker network prune -f &&
+            docker volume rm $(docker volume ls -q)
           "
 
       - name: Sync files to Azure VM
