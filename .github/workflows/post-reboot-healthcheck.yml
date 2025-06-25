@@ -1,4 +1,4 @@
-name: Healthcheck on App Ports Task8
+name: Post-Reboot Healthcheck on App Ports
 
 on:
   workflow_dispatch:
@@ -16,19 +16,21 @@ jobs:
             echo "Port 3000 is accessible." >> access-check.log
           else
             echo "Port 3000 is NOT accessible." >> access-check.log
+            exit 1
           fi
 
       - name: Check HTTP access on port 8080 (Backend)
         run: |
-          echo "🔍 Checking http://${{ secrets.VM_PUBLIC_IP }}:8080 ..." >> access-check.log
+          echo "Checking http://${{ secrets.VM_PUBLIC_IP }}:8080 ..." >> access-check.log
           if curl --fail --silent http://${{ secrets.VM_PUBLIC_IP }}:8080; then
             echo "Port 8080 is accessible." >> access-check.log
           else
             echo "Port 8080 is NOT accessible." >> access-check.log
+            exit 1
           fi
 
       - name: Upload access check log
         uses: actions/upload-artifact@v4
         with:
-          name: port-access-check-log
+          name: post-reboot-healthcheck-log
           path: access-check.log
