@@ -2,7 +2,8 @@ name: CI – Test & Build Task7
 
 on:
   push:
-    branches: [ main ]
+    paths:
+      - 'week8/week8_summery/backend/**'
   pull_request:
 
 jobs:
