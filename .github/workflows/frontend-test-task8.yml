@@ -1,4 +1,4 @@
-name: Frontend Test
+name: Frontend Test Task8
 
 on:
   workflow_dispatch: # Can be run manually
@@ -17,15 +17,11 @@ jobs:
     outputs:
       job_start_time: ${{ steps.set_time.outputs.job_start_time }}
 
-    defaults:
-      run:
-        working-directory: task8/task8_summery/app/frontend
-
     steps:
       - uses: actions/checkout@v3
 
-      - id: set_time
-        run: echo "job_start_time=$(date +%s)" >> $GITHUB_OUTPUT
+      - name: Set working directory
+        run: echo "ready"  # placeholder step, can be removed
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -34,22 +30,25 @@ jobs:
           cache: 'npm'
           cache-dependency-path: task8/task8_summery/app/frontend/package-lock.json
 
+      - name: Set job start time
+        id: set_time
+        run: echo "job_start_time=$(date +%s)" >> $GITHUB_OUTPUT
+        working-directory: task8/task8_summery/app/frontend
+
       - name: Install frontend dependencies
-        run: |
-          if [ "${{ matrix.node-version }}" < "18" ] ; then
-            npm install
-          else
-            npm ci
-          fi
+        run: npm ci
+        working-directory: task8/task8_summery/app/frontend
 
       - name: Install ESLint
         run: npm install -g eslint
 
       - name: Run ESLint
         run: npx eslint .
+        working-directory: task8/task8_summery/app/frontend
 
       - name: Serve frontend for testing
         run: |
           npm start &
           sleep 3
           curl -I http://localhost:3000
+        working-directory: task8/task8_summery/app/frontend
