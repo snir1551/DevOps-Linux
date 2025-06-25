@@ -2,7 +2,8 @@ name: Check and Set Static IP Task8
 
 on:
   workflow_call:
-
+  workflow_dispatch:
+  
 jobs:
   check-static-ip:
     runs-on: ubuntu-latest
