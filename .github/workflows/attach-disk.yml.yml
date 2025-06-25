@@ -1,4 +1,4 @@
-name: Attach Persistent Disk to Azure VM
+name: Attach Persistent Disk to Azure VM Task8
 
 on:
   workflow_dispatch:
