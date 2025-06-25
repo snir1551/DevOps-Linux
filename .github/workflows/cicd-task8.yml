@@ -29,3 +29,10 @@ jobs:
       backend_health: ${{ needs.docker-up.outputs.backend_health }}
       frontend_health: ${{ needs.docker-up.outputs.frontend_health }}
     secrets: inherit
+
+  deploy:
+    name: Deploy to Azure VM
+    needs: [frontend-tests, backend-tests]
+    if: ${{ needs.frontend-tests.result == 'success' && needs.backend-tests.result == 'success' }}
+    uses: ./.github/workflows/deploy-task8.yml
+    secrets: inherit
