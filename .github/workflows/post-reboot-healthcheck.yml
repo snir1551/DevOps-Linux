@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Check HTTP access on port 3000 (Frontend)
         run: |
-          echo "🔍 Checking http://${{ secrets.VM_PUBLIC_IP }}:3000 ..." > access-check.log
+          echo "Checking http://${{ secrets.VM_PUBLIC_IP }}:3000 ..." > access-check.log
           if curl --fail --silent http://${{ secrets.VM_PUBLIC_IP }}:3000; then
             echo "Port 3000 is accessible." >> access-check.log
           else
