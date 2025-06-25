@@ -36,3 +36,8 @@ jobs:
     if: ${{ needs.frontend-tests.result == 'success' && needs.backend-tests.result == 'success' }}
     uses: ./.github/workflows/deploy-task8.yml
     secrets: inherit
+
+  create-and-attach-disk:
+    needs: deploy
+    uses: ./.github/workflows/create-disk.yml
+    secrets: inherit
