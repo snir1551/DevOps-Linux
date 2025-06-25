@@ -17,3 +17,15 @@ jobs:
     needs: [frontend-tests, backend-tests]
     uses: ./.github/workflows/docker-compose-up-task8.yml
     secrets: inherit
+
+  notify:
+    needs: [backend-tests, frontend-tests, docker-up]
+    if: always()
+    uses: ./.github/workflows/notify-task8.yml
+    with:
+      job_start_time: ${{ needs.frontend-tests.outputs.job_start_time }}
+      backend_test_status: ${{ needs.backend-tests.result }}
+      frontend_test_status: ${{ needs.frontend-tests.result }}
+      backend_health: ${{ needs.docker-up.outputs.backend_health }}
+      frontend_health: ${{ needs.docker-up.outputs.frontend_health }}
+    secrets: inherit
