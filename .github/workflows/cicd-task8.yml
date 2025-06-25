@@ -15,5 +15,5 @@ jobs:
 
   docker-up:
     needs: [frontend-tests, backend-tests]
-    uses: ./.github/workflows/docker-up-task8.yml
+    uses: ./.github/workflows/docker-compose-up-task8.yml
     secrets: inherit
