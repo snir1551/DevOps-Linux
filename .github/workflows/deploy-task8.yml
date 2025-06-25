@@ -18,7 +18,7 @@ jobs:
           chmod 600 key.pem
 
       - name: Create .env file
-        run: echo "${{ secrets.ENV_FILE_TASK8 }}" > .env
+        run: echo "${{ secrets.ENV_FILE_TASK8 }}" > week8/week8_summery/app/.env
 
       - name: Clean Docker on VM
         run: |
@@ -83,3 +83,7 @@ jobs:
 
       - name: Cleanup SSH key
         run: rm key.pem
+
+      - name: Cleanup .env file
+        if: always()
+        run: rm -f week8/week8_summery/app/.env
