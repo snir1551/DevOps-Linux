@@ -55,7 +55,7 @@ jobs:
     secrets: inherit
 
   reboot-vm:
-    needs: open-ports
+    needs: [open-ports, check-static-ip, create-and-attach-disk]
     uses: ./.github/workflows/reboot-vm-task8.yml
     secrets: inherit
 
