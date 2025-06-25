@@ -965,6 +965,26 @@ https://github.com/snir1551/DevOps-Linux/wiki/Week-6-%E2%80%93-Docker-&-Containe
 
 ******
 
+<details>
+<summary>WEEK 8 – Daily Practice Tasks: Azure Infrastructure</summary>
+<br />
+
+[week8-Azure Infrastructure](https://github.com/snir1551/DevOps-Linux/wiki/WEEK-8-%E2%80%93-Daily-Practice-Tasks:-Azure-Infrastructure)
+
+</details>
+
+******
+
+<details>
+<summary>WEEK 8 – Summary Task: Azure Infrastructure</summary>
+<br />
+
+[week8-Azure Infrastructure](https://github.com/snir1551/DevOps-Linux/wiki/WEEK-8-%E2%80%93-Summary-Task:-Azure-Infrastructure)
+
+</details>
+
+******
+
 </details>
 
 
