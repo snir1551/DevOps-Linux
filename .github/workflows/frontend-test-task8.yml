@@ -17,38 +17,34 @@ jobs:
     outputs:
       job_start_time: ${{ steps.set_time.outputs.job_start_time }}
 
+    defaults:
+      run:
+        working-directory: week8/week8_summery/app/frontend
+
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set working directory
-        run: echo "ready"  # placeholder step, can be removed
+      - id: set_time
+        run: echo "job_start_time=$(date +%s)" >> $GITHUB_OUTPUT
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-          cache-dependency-path: task8/task8_summery/app/frontend/package-lock.json
-
-      - name: Set job start time
-        id: set_time
-        run: echo "job_start_time=$(date +%s)" >> $GITHUB_OUTPUT
-        working-directory: task8/task8_summery/app/frontend
+          cache-dependency-path: week8/week8_summery/app/frontend/package-lock.json
 
       - name: Install frontend dependencies
         run: npm ci
-        working-directory: task8/task8_summery/app/frontend
 
       - name: Install ESLint
         run: npm install -g eslint
 
       - name: Run ESLint
         run: npx eslint .
-        working-directory: task8/task8_summery/app/frontend
 
       - name: Serve frontend for testing
         run: |
           npm start &
           sleep 3
           curl -I http://localhost:3000
-        working-directory: task8/task8_summery/app/frontend
