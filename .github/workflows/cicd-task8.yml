@@ -44,9 +44,14 @@ jobs:
     uses: ./.github/workflows/open-ports-task8.yml
     secrets: inherit
 
-  port-access-check:
+  reboot-vm:
     needs: open-ports
-    uses: ./.github/workflows/port-access-check.yml
+    uses: ./.github/workflows/reboot-vm-task8.yml
+    secrets: inherit
+
+  post-reboot-healthcheck:
+    needs: reboot-vm
+    uses: ./.github/workflows/post-reboot-healthcheck.yml
     secrets: inherit
 
   create-and-attach-disk:
