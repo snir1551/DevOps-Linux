@@ -1,0 +1,14 @@
+name: CI/CD Pipeline Task8
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  docker-up:
+    uses: ./.github/workflows/docker-compose-up.yml
+
+  backend-tests:
+    needs: docker-up
+    uses: ./.github/workflows/backend-test-task8.yml
