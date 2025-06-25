@@ -41,12 +41,12 @@ jobs:
 
   create-and-attach-disk:
     needs: deploy
-    uses: ./.github/workflows/create-disk-attach.yml
+    uses: ./.github/workflows/create-disk-attach-task8.yml
     secrets: inherit
 
   check-static-ip:
     needs: deploy
-    uses: ./.github/workflows/check-static-ip.yml
+    uses: ./.github/workflows/check-static-ip-task8.yml
     secrets: inherit
 
   open-ports:
@@ -61,9 +61,9 @@ jobs:
 
   post-reboot-healthcheck:
     needs: reboot-vm
-    uses: ./.github/workflows/post-reboot-healthcheck.yml
+    uses: ./.github/workflows/post-reboot-healthcheck-task8.yml
     secrets: inherit
 
   update-deployment-log:
     needs: post-reboot-healthcheck
-    uses: ./.github/workflows/commit-deployment-log.yml
+    uses: ./.github/workflows/commit-deployment-log-task8.yml
