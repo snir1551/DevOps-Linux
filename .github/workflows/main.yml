@@ -1,0 +1,53 @@
+name: Attach Persistent Disk to Azure VM
+
+on:
+  workflow_dispatch:
+
+jobs:
+  attach-disk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set variables
+        run: |
+          echo "RESOURCE_GROUP=rg-devops-lab" >> $GITHUB_ENV
+          echo "VM_NAME=Linux-VM01" >> $GITHUB_ENV
+          echo "DISK_NAME=task8-disk" >> $GITHUB_ENV
+          echo "DISK_SIZE_GB=4" >> $GITHUB_ENV
+          echo "LOCATION=israelcentral" >> $GITHUB_ENV
+
+      - name: Check if disk exists
+        id: check_disk
+        run: |
+          if az disk show --resource-group $RESOURCE_GROUP --name $DISK_NAME &>/dev/null; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Disk (Standard HDD)
+        if: steps.check_disk.outputs.exists == 'false'
+        run: |
+          az disk create \
+            --resource-group $RESOURCE_GROUP \
+            --name $DISK_NAME \
+            --size-gb $DISK_SIZE_GB \
+            --sku Standard_LRS \
+            --location $LOCATION \
+            --query "id" -o tsv
+
+      - name: Attach Disk to VM
+        run: |
+          az vm disk attach \
+            --resource-group $RESOURCE_GROUP \
+            --vm-name $VM_NAME \
+            --name $DISK_NAME \
+            --new false
