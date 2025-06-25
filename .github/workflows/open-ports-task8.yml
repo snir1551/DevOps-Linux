@@ -1,0 +1,40 @@
+name: Open NSG Ports
+
+on:
+  workflow_dispatch:
+
+jobs:
+  open-ports:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Open ports 3000 and 8080
+        run: |
+          RESOURCE_GROUP=rg-devops-lab
+          NSG_NAME=$(az network nsg list --resource-group $RESOURCE_GROUP --query "[0].name" -o tsv)
+
+          for PORT in 3000 8080; do
+            RULE_NAME="Allow-Port-$PORT"
+            if az network nsg rule show --resource-group $RESOURCE_GROUP --nsg-name $NSG_NAME --name $RULE_NAME &>/dev/null; then
+              echo "Rule $RULE_NAME already exists"
+            else
+              echo "Creating rule to allow port $PORT"
+              az network nsg rule create \
+                --resource-group $RESOURCE_GROUP \
+                --nsg-name $NSG_NAME \
+                --name $RULE_NAME \
+                --priority $((1000 + PORT)) \
+                --access Allow \
+                --direction Inbound \
+                --protocol Tcp \
+                --destination-port-ranges $PORT \
+                --source-address-prefixes '*' \
+                --destination-address-prefixes '*' \
+                --description "Allow inbound traffic on port $PORT"
+            fi
+          done
