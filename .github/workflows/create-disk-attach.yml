@@ -51,5 +51,3 @@ jobs:
             --resource-group $RESOURCE_GROUP \
             --vm-name $VM_NAME \
             --name $DISK_NAME
-            --name $DISK_NAME \
-            --new false
