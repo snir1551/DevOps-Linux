@@ -2,6 +2,7 @@ name: Create And Attach Disk to Azure VM Task8
 
 on:
   workflow_dispatch:
+  workflow_call:
 
 jobs:
   attach-disk:
