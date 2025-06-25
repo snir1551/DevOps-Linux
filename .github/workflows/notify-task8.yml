@@ -19,7 +19,7 @@ on:
         required: true
         type: string
     secrets:
-      SLACK_WEBHOOK_URL_TASK8:
+      SLACK_WEBHOOK_URL:
         required: true
 
 jobs:
