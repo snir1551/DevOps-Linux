@@ -1,4 +1,4 @@
-name: Check and Set Static Public IP
+name: Check and Set Static Public IP Task8
 
 on:
   workflow_call:
@@ -17,7 +17,7 @@ jobs:
       - name: Check and Set Static IP
         id: check-ip
         run: |
-          RESOURCE_GROUP="RG-DEVOPS-LAB"
+          RESOURCE_GROUP="rg-devops-lab"
           VM_NAME="Linux-VM01"
 
           # Get NIC ID and name
