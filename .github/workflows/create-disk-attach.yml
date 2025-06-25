@@ -45,9 +45,16 @@ jobs:
             --location $LOCATION \
             --query "id" -o tsv
 
-      - name: Attach Disk to VM
+      - name: Attach Disk to VM (only if not attached)
         run: |
-          az vm disk attach \
-            --resource-group $RESOURCE_GROUP \
-            --vm-name $VM_NAME \
-            --name $DISK_NAME
+          ATTACHED_VM_ID=$(az disk show --resource-group $RESOURCE_GROUP --name $DISK_NAME --query "managedBy" -o tsv)
+      
+          if [[ -z "$ATTACHED_VM_ID" ]]; then
+            echo "Disk not attached. Attaching now..."
+            az vm disk attach \
+              --resource-group $RESOURCE_GROUP \
+              --vm-name $VM_NAME \
+              --name $DISK_NAME
+          else
+            echo "Disk already attached to a VM."
+          fi
