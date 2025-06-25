@@ -65,12 +65,12 @@ jobs:
           done
 
           if [ "$FINAL_HEALTH_STATUS" != "healthy" ]; then
-            echo "❌ $SERVICE_NAME did not become healthy in time."
+            echo "$SERVICE_NAME did not become healthy in time."
             docker logs "$CONTAINER_NAME"
             exit 1
           fi
 
-          echo "✅ $SERVICE_NAME is healthy!"
+          echo "$SERVICE_NAME is healthy!"
           echo "health_status=$FINAL_HEALTH_STATUS" >> "$GITHUB_OUTPUT"
 
       - name: Wait for Frontend to be healthy
@@ -114,3 +114,11 @@ jobs:
 
           echo "$SERVICE_NAME is healthy!"
           echo "health_status=$FINAL_HEALTH_STATUS" >> "$GITHUB_OUTPUT"
+
+      - name: Docker Compose Down
+        if: always()
+        run: docker compose down -v
+
+      - name: Delete .env file
+        if: always()
+        run: rm -f .env
