@@ -1,4 +1,4 @@
-name: Check and Set Static IP
+name: Check and Set Static IP Task8
 
 on:
   workflow_call:
