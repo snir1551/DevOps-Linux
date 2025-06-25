@@ -1,9 +1,9 @@
-name: Check and Set Static IP Task8
+name: Check and Convert Public IP to Static
 
 on:
   workflow_call:
   workflow_dispatch:
-  
+
 jobs:
   check-static-ip:
     runs-on: ubuntu-latest
@@ -14,73 +14,50 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Get NIC Name from VM
-        id: get_nic
+      - name: Get Public IP Name
+        id: get_ip_name
         run: |
           RESOURCE_GROUP="rg-devops-lab"
-          VM_NAME="Linux-VM01"
 
-          NIC_ID=$(az vm show \
+          IP_NAME=$(az network public-ip list \
             --resource-group "$RESOURCE_GROUP" \
-            --name "$VM_NAME" \
-            --query "networkProfile.networkInterfaces[0].id" -o tsv)
+            --query "[0].name" -o tsv)
 
-          if [ -z "$NIC_ID" ]; then
-            echo "NIC ID not found"
-            exit 1
-          fi
-
-          NIC_NAME=$(basename "$NIC_ID")
-          echo "NIC_NAME=$NIC_NAME" >> $GITHUB_ENV
-          echo "NIC Name: $NIC_NAME"
-
-      - name: Get Public IP ID from NIC
-        id: get_ip_id
-        run: |
-          RESOURCE_GROUP="rg-devops-lab"
-          NIC_NAME="${{ env.NIC_NAME }}"
-
-          IP_ID=$(az network nic show \
-            --resource-group "$RESOURCE_GROUP" \
-            --name "$NIC_NAME" \
-            --query "ipConfigurations[0].publicIpAddress.id" -o tsv)
-
-          if [ -z "$IP_ID" ]; then
-            echo "No public IP attached to NIC. Exiting."
-            exit 0
-          fi
-
-          IP_NAME=$(basename "$IP_ID")
           echo "IP_NAME=$IP_NAME" >> $GITHUB_ENV
-          echo "Public IP Name: $IP_NAME"
+          echo "IP name found: $IP_NAME"
 
-      - name: Check Public IP Allocation Method
-        id: check_allocation
+      - name: Check and Update IP Allocation
         run: |
           RESOURCE_GROUP="rg-devops-lab"
-          IP_NAME="${{ env.IP_NAME }}"
 
           ALLOCATION=$(az network public-ip show \
             --resource-group "$RESOURCE_GROUP" \
             --name "$IP_NAME" \
             --query "publicIpAllocationMethod" -o tsv)
 
-          echo "ALLOCATION=$ALLOCATION" >> $GITHUB_ENV
-          echo "Current Allocation: $ALLOCATION"
+          echo "Current IP allocation: $ALLOCATION"
 
-      - name: Update to Static if Needed
-        if: env.ALLOCATION == 'Dynamic'
+          if [ "$ALLOCATION" = "Dynamic" ]; then
+            echo "Changing allocation to Static..."
+            az network public-ip update \
+              --resource-group "$RESOURCE_GROUP" \
+              --name "$IP_NAME" \
+              --allocation-method Static
+            echo "Allocation changed to Static."
+          else
+            echo "Allocation already Static. No action needed."
+          fi
+
+      - name: Get VM Public IP
+        id: get_vm_ip
         run: |
           RESOURCE_GROUP="rg-devops-lab"
-          IP_NAME="${{ env.IP_NAME }}"
+          VM_NAME="Linux-VM01"
 
-          echo "🔧 Changing IP to Static..."
-          az network public-ip update \
+          VM_IP=$(az vm show -d \
             --resource-group "$RESOURCE_GROUP" \
-            --name "$IP_NAME" \
-            --allocation-method Static
-          echo "IP changed to Static."
+            --name "$VM_NAME" \
+            --query publicIps -o tsv)
 
-      - name: Done
-        if: env.ALLOCATION != 'Dynamic'
-        run: echo "IP is already Static. No change made."
+          echo "VM_IP=$VM_IP" >> $GITHUB_ENV
+          echo "Public VM IP: $VM_IP"
