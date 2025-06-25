@@ -1,0 +1,55 @@
+name: Check and Set Static Public IP
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  check-and-update-ip:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Check and Set Static IP
+        id: check-ip
+        run: |
+          RESOURCE_GROUP="RG-DEVOPS-LAB"
+          VM_NAME="Linux-VM01"
+
+          # Get NIC ID and name
+          NIC_ID=$(az vm show \
+            --resource-group $RESOURCE_GROUP \
+            --name $VM_NAME \
+            --query 'networkProfile.networkInterfaces[0].id' -o tsv)
+          NIC_NAME=$(basename $NIC_ID)
+
+          # Get Public IP ID and name
+          IP_ID=$(az network nic show \
+            --resource-group $RESOURCE_GROUP \
+            --name $NIC_NAME \
+            --query "ipConfigurations[0].publicIpAddress.id" -o tsv)
+          IP_NAME=$(basename $IP_ID)
+
+          # Check current allocation method
+          ALLOCATION=$(az network public-ip show \
+            --resource-group $RESOURCE_GROUP \
+            --name $IP_NAME \
+            --query "publicIpAllocationMethod" -o tsv)
+
+          echo "Public IP Name: $IP_NAME"
+          echo "Current Allocation: $ALLOCATION"
+
+          if [ "$ALLOCATION" = "Dynamic" ]; then
+            echo "Converting to Static IP..."
+            az network public-ip update \
+              --resource-group $RESOURCE_GROUP \
+              --name $IP_NAME \
+              --allocation-method Static
+            echo "IP has been updated to Static."
+          else
+            echo "IP is already Static. No action needed."
+          fi
