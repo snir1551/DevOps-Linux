@@ -1,0 +1,71 @@
+name: Deploy to Azure VM Task8
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      DEPLOY_PATH: /home/snir1551/week8summery
+      LOCAL_FOLDER: week8/week8_summery/app
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Write SSH key
+        run: |
+          echo "${{ secrets.VM_SSH_KEY }}" > key.pem
+          chmod 600 key.pem
+
+      - name: Clean Docker on VM
+        run: |
+          ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "
+            echo '🔄 Cleaning Docker environment...' &&
+            sudo docker container prune -f &&
+            sudo docker image prune -af &&
+            sudo docker volume prune -f &&
+            sudo docker network prune -f
+          "
+
+      - name: Sync files to Azure VM
+        run: |
+          ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "mkdir -p $DEPLOY_PATH"
+          rsync -az --delete --exclude='.git' --exclude='node_modules' \
+            -e "ssh -i key.pem -o StrictHostKeyChecking=no" \
+            ./$LOCAL_FOLDER/ ${{ secrets.VM_HOST }}:$DEPLOY_PATH/
+
+      - name: Deploy with Docker Compose
+        run: |
+          ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "
+            cd $DEPLOY_PATH &&
+            sudo docker-compose down --remove-orphans &&
+            sudo docker-compose up -d --build
+          "
+
+      - name: HTTP Healthcheck
+        run: |
+          echo "🔍 Verifying web app is reachable..."
+          curl -fsSL http://${{ secrets.VM_PUBLIC_IP }}:3000 || {
+            echo 'Web app is not responding on port 3000!'
+            exit 1
+          }
+
+      - name: Logs from Azure VM
+        run: |
+          ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "
+            cd $DEPLOY_PATH
+            sudo docker-compose ps
+            sudo docker-compose logs --tail=50
+          " > remote_logs.txt
+
+      - name: Upload logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: remote-logs
+          path: remote_logs.txt
+
+      - name: Cleanup SSH key
+        run: rm key.pem
