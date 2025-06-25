@@ -21,37 +21,45 @@ jobs:
         run: |
           docker compose -f docker-compose.yml up -d --build
 
-      - name: Wait for Webapp to be healthy
+      - name: Wait for Backend to be healthy
         id: wait_for_health
         run: |
-          echo "Waiting for webapp container to be healthy..."
+          echo "Waiting for backend container to be healthy..."
+          SERVICE_NAME=backend
+          CONTAINER_NAME=$(docker ps --filter "name=_${SERVICE_NAME}_" --format "{{.Names}}" | head -n 1)
+      
+          if [ -z "$CONTAINER_NAME" ]; then
+            echo "No container found for service: $SERVICE_NAME"
+            exit 1
+          fi
+      
+          echo "Detected container: $CONTAINER_NAME"
           FINAL_HEALTH_STATUS="unknown"
-          max_retries=18  # 18 * 10s = 180s
-
+          max_retries=18
+      
           for i in $(seq 1 $max_retries); do
-            status=$(docker inspect webapp --format '{{.State.Health.Status}}' 2>/dev/null || echo "not_found")
-
+            status=$(docker inspect "$CONTAINER_NAME" --format '{{.State.Health.Status}}' 2>/dev/null || echo "not_found")
+      
             echo "[$i/$max_retries] Status: $status"
             docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
-
+      
             if [ "$status" = "healthy" ]; then
-              echo "webapp is healthy!"
+              echo "$CONTAINER_NAME is healthy!"
               FINAL_HEALTH_STATUS="healthy"
               break
             elif [ "$status" = "not_found" ]; then
-              echo "webapp not found. Retrying..."
+              echo "$CONTAINER_NAME not found. Retrying..."
             else
-              echo "webapp status: $status. Waiting..."
+              echo "$CONTAINER_NAME status: $status. Waiting..."
             fi
-
+      
             sleep 10
           done
-
+      
           if [ "$FINAL_HEALTH_STATUS" != "healthy" ]; then
-            echo "webapp did not become healthy in time."
-            docker logs webapp || echo "No logs available."
-            FINAL_HEALTH_STATUS="unhealthy"
+            echo "$CONTAINER_NAME did not become healthy in time."
+            docker logs "$CONTAINER_NAME" || echo "No logs available."
             exit 1
           fi
-
+      
           echo "health_status=$FINAL_HEALTH_STATUS" >> "$GITHUB_OUTPUT"
