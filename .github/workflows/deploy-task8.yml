@@ -8,10 +8,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    env:
-      DEPLOY_PATH: /home/snir1551/week8summery/app
-      LOCAL_FOLDER: week8/week8_summery/app
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,7 +20,7 @@ jobs:
       - name: Clean Docker on VM
         run: |
           ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "
-            echo '🔄 Cleaning Docker environment...'
+            echo 'Cleaning Docker environment...'
 
             containers=\$(docker ps -q)
             if [ -n \"\$containers\" ]; then
@@ -49,22 +45,20 @@ jobs:
 
       - name: Sync app folder to Azure VM
         run: |
-          ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "mkdir -p $DEPLOY_PATH"
-          rsync -az --delete --exclude='.git' --exclude='node_modules' \
-            -e "ssh -i key.pem -o StrictHostKeyChecking=no" \
-            ./$LOCAL_FOLDER/ ${{ secrets.VM_HOST }}:$DEPLOY_PATH/
+          ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "mkdir -p /home/snir1551/week8summery/app"
+          rsync -az --delete --exclude='.git' --exclude='node_modules' -e "ssh -i key.pem -o StrictHostKeyChecking=no" ./week8/week8_summery/app/ ${{ secrets.VM_HOST }}:/home/snir1551/week8summery/app/
 
       - name: Deploy with Docker Compose
         run: |
           ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "
-            cd $DEPLOY_PATH &&
+            cd /home/snir1551/week8summery/app &&
             sudo docker-compose down --remove-orphans &&
             sudo docker-compose up -d --build
           "
 
       - name: HTTP Healthcheck
         run: |
-          echo "🔍 Verifying web app is reachable..."
+          echo "Verifying web app is reachable..."
           curl -fsSL http://${{ secrets.VM_PUBLIC_IP }}:3000 || {
             echo 'Web app is not responding on port 3000!'
             exit 1
@@ -73,7 +67,7 @@ jobs:
       - name: Logs from Azure VM
         run: |
           ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "
-            cd $DEPLOY_PATH
+            cd /home/snir1551/week8summery/app
             sudo docker-compose ps
             sudo docker-compose logs --tail=50
           " > remote_logs.txt
