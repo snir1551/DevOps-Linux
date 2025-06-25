@@ -24,27 +24,31 @@ jobs:
       - name: Wait for Backend to be healthy
         id: wait_for_health
         run: |
-          echo "Waiting for backend container to be healthy..."
-          SERVICE_NAME=backend
-          CONTAINER_NAME=$(docker ps --filter "name=_${SERVICE_NAME}_" --format "{{.Names}}" | head -n 1)
-      
+          echo "Waiting for $SERVICE_NAME container to be healthy..."
+
+          SERVICE_NAME="backend"
+          COMPOSE_PROJECT_DIR="week8/week8_summery/app"
+          cd "$COMPOSE_PROJECT_DIR"
+          
+          CONTAINER_NAME=$(docker compose ps -q "$SERVICE_NAME")
+          
           if [ -z "$CONTAINER_NAME" ]; then
             echo "No container found for service: $SERVICE_NAME"
             exit 1
           fi
-      
+          
           echo "Detected container: $CONTAINER_NAME"
           FINAL_HEALTH_STATUS="unknown"
           max_retries=18
-      
+          
           for i in $(seq 1 $max_retries); do
             status=$(docker inspect "$CONTAINER_NAME" --format '{{.State.Health.Status}}' 2>/dev/null || echo "not_found")
-      
+          
             echo "[$i/$max_retries] Status: $status"
             docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
-      
+          
             if [ "$status" = "healthy" ]; then
-              echo "$CONTAINER_NAME is healthy!"
+              echo "$SERVICE_NAME is healthy!"
               FINAL_HEALTH_STATUS="healthy"
               break
             elif [ "$status" = "not_found" ]; then
@@ -52,14 +56,14 @@ jobs:
             else
               echo "$CONTAINER_NAME status: $status. Waiting..."
             fi
-      
+          
             sleep 10
           done
-      
+          
           if [ "$FINAL_HEALTH_STATUS" != "healthy" ]; then
-            echo "$CONTAINER_NAME did not become healthy in time."
+            echo "❌ $CONTAINER_NAME did not become healthy in time."
             docker logs "$CONTAINER_NAME" || echo "No logs available."
             exit 1
           fi
-      
-          echo "health_status=$FINAL_HEALTH_STATUS" >> "$GITHUB_OUTPUT"
+          
+          echo "✅ health_status=$FINAL_HEALTH_STATUS" >> "$GITHUB_OUTPUT"
