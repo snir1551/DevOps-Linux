@@ -41,4 +41,4 @@ jobs:
               "text": "*CI/CD Pipeline - Task8 *\n\n* Duration:* `${{ steps.calc.outputs.duration }}`\n\n* Backend Test:* `${{ inputs.backend_test_status }}`\n* Frontend Test:* `${{ inputs.frontend_test_status }}`\n\n* Backend Health:* `${{ inputs.backend_health }}`\n* Frontend Health:* `${{ inputs.frontend_health }}`"
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_TASK8 }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
