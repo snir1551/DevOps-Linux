@@ -16,8 +16,8 @@ jobs:
     steps:
       - name: Check HTTP access on port 3000 (Frontend)
         run: |
-          echo "Checking http://${{ ${{ inputs.vm_ip }} }}:3000 ..." > access-check.log
-          if curl --fail --silent http://${{ ${{ inputs.vm_ip }} }}:3000; then
+          echo "Checking http://${{ inputs.vm_ip }}:3000 ..." > access-check.log
+          if curl --fail --silent http://${{ inputs.vm_ip }}:3000; then
             echo "Port 3000 is accessible." >> access-check.log
           else
             echo "Port 3000 is NOT accessible." >> access-check.log
@@ -26,8 +26,8 @@ jobs:
 
       - name: Check HTTP access on port 8080 (Backend)
         run: |
-          echo "Checking http://${{ ${{ inputs.vm_ip }} }}:8080 ..." >> access-check.log
-          if curl --fail --silent http://${{ ${{ inputs.vm_ip }} }}:8080; then
+          echo "Checking http://${{ inputs.vm_ip }}:8080 ..." >> access-check.log
+          if curl --fail --silent http://${{ inputs.vm_ip }}:8080; then
             echo "Port 8080 is accessible." >> access-check.log
           else
             echo "Port 8080 is NOT accessible." >> access-check.log
