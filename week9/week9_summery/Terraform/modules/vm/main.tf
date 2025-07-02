@@ -26,19 +26,5 @@ resource "azurerm_linux_virtual_machine" "this" {
 
   tags = var.tags
 
-  custom_data = base64encode(<<EOF
-#!/bin/bash
-sudo apt-get update
-sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable"
-sudo apt-get update
-sudo apt-get install -y docker-ce
-sudo usermod -aG docker azureuser
-
-# Install Docker Compose
-sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-EOF
-  )
+  custom_data = base64encode(file("${path.module}/../../scripts/install_docker.sh"))
 }
