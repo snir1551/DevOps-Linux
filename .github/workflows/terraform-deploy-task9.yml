@@ -34,6 +34,26 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
+      - name: Import existing resource group if it exists
+        run: |
+          RG_NAME="mtc-resources"
+          MODULE_PATH="module.resource_group.azurerm_resource_group.this"
+          RG_ID=$(az group show --name $RG_NAME --query "id" -o tsv 2>/dev/null || true)
+
+          if [ -n "$RG_ID" ]; then
+            echo "Resource group exists: $RG_ID"
+            
+            if ! terraform state list | grep -q "$MODULE_PATH"; then
+              echo "Importing $RG_NAME to Terraform..."
+              terraform import $MODULE_PATH $RG_ID
+            else
+              echo "Resource group already managed in Terraform state."
+            fi
+          else
+            echo "Resource group does not exist, will be created by Terraform."
+          fi
+
+
       - name: Terraform Plan
         run: terraform plan -out=tfplan.out -var="ssh_public_key=${{ inputs.ssh_public_key }}"
 
