@@ -19,6 +19,6 @@ output "virtual_machine_name" {
 }
 
 output "ssh_connection_command" {
-  description = "SSH command to connect to the virtual machine"
-  value       = "ssh -i ${var.virtual_machine.ssh_key_path} ${var.virtual_machine.admin_user}@${module.network.public_ip_address}"
+  description = "Command to SSH into the VM"
+  value       = "ssh ${var.virtual_machine.admin_user}@${module.network.public_ip_address}"
 }
