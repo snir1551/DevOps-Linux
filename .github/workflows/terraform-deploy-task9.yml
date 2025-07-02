@@ -35,7 +35,7 @@ jobs:
         run: terraform init
 
       - name: Terraform Plan
-        run: terraform plan -out=tfplan.out
+        run: terraform plan -out=tfplan.out -var="ssh_public_key=${{ inputs.ssh_public_key }}"
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve tfplan.out
+        run: terraform apply -auto-approve tfplan.out -var="ssh_public_key=${{ inputs.ssh_public_key }}"
