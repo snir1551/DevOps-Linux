@@ -31,7 +31,7 @@ jobs:
               --resource-group $RESOURCE_GROUP \
               --nsg-name $NSG_NAME \
               --name Allow-Port-3000 \
-              --priority 100 \
+              --priority 101 \
               --destination-port-ranges 3000 \
               --direction Inbound \
               --access Allow \
@@ -54,7 +54,7 @@ jobs:
               --resource-group $RESOURCE_GROUP \
               --nsg-name $NSG_NAME \
               --name Allow-Port-8080 \
-              --priority 101 \
+              --priority 102 \
               --destination-port-ranges 8080 \
               --direction Inbound \
               --access Allow \
