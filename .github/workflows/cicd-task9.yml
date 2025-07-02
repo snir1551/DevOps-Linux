@@ -2,7 +2,7 @@ name: CI/CD Pipeline Task9
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, week9_summery ]
     paths:
         - 'week9/week9_summery'
   workflow_dispatch:
