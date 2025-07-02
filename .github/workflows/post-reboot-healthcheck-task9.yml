@@ -3,6 +3,11 @@ name: Post-Reboot Healthcheck on App Ports Task9
 on:
   workflow_dispatch:
   workflow_call:
+    inputs:
+      vm_ip:
+        required: true
+        type: string
+  
 
 jobs:
   check-access:

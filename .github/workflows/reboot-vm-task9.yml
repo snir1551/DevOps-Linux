@@ -3,6 +3,10 @@ name: Reboot Azure VM Task9
 on:
   workflow_dispatch:
   workflow_call:
+    inputs:
+      vm_ip:
+        required: true
+        type: string
 
 jobs:
   reboot-vm:
