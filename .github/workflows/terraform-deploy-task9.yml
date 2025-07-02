@@ -2,20 +2,22 @@ name: Terraform Deploy Task9
 
 on:
   workflow_call:
+    outputs:
+      vm_ip:
+        description: "Public IP of the VM"
+        value: ${{ jobs.get-ip.outputs.vm_ip }}
     secrets:
       AZURE_CREDENTIALS:
         required: true
       VM_SSH_KEY:
         required: true
-    outputs:
-      vm_ip:
-        description: "The VM public IP from terraform output"
-        value: ${{ jobs.terraform.outputs.vm_ip }}
 
 jobs:
   terraform:
     name: Terraform Setup
     runs-on: ubuntu-latest
+    outputs:
+      vm_ip: ${{ steps.get_vm_ip.outputs.vm_ip }}
     defaults:
       run:
         working-directory: week9/week9_summery/Terraform
@@ -89,9 +91,9 @@ jobs:
         id: vm_ip
         run: |
           echo "vm_ip=$(terraform output -raw public_ip_address)" >> $GITHUB_OUTPUT
-          
-    outputs:
-      vm_ip: ${{ steps.vm_ip.outputs.value }}
+
+    # outputs:
+    #   vm_ip: ${{ steps.vm_ip.outputs.value }}
 
 
           
