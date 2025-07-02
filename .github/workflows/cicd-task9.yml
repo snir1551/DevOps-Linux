@@ -1,0 +1,74 @@
+name: CI/CD Pipeline Task8
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+        - 'week8/week9_summery'
+  workflow_dispatch:
+
+jobs:
+
+  frontend-tests:
+    uses: ./.github/workflows/frontend-test-task8.yml
+  
+  backend-tests:
+    uses: ./.github/workflows/backend-test-task8.yml
+
+  docker-up:
+    needs: [frontend-tests, backend-tests]
+    uses: ./.github/workflows/docker-compose-up-task8.yml
+    secrets: inherit
+
+  notify:
+    needs: [backend-tests, frontend-tests, docker-up]
+    if: always()
+    uses: ./.github/workflows/notify-task8.yml
+    with:
+      job_start_time: ${{ needs.frontend-tests.outputs.job_start_time }}
+      backend_test_status: ${{ needs.backend-tests.result }}
+      frontend_test_status: ${{ needs.frontend-tests.result }}
+      backend_health: ${{ needs.docker-up.outputs.backend_health }}
+      frontend_health: ${{ needs.docker-up.outputs.frontend_health }}
+    secrets: inherit
+
+  terraform:
+    name: Terraform Infra Deploy
+    uses: ./.github/workflows/terraform-deploy.yml
+    secrets: inherit
+
+  deploy:
+    name: Deploy to Azure VM
+    needs: [frontend-tests, backend-tests, docker-up]
+    if: ${{ needs.frontend-tests.result == 'success' && needs.backend-tests.result == 'success' }}
+    uses: ./.github/workflows/deploy-task8.yml
+    secrets: inherit
+
+  create-and-attach-disk:
+    needs: deploy
+    uses: ./.github/workflows/create-disk-attach-task8.yml
+    secrets: inherit
+
+  check-static-ip:
+    needs: deploy
+    uses: ./.github/workflows/check-static-ip-task8.yml
+    secrets: inherit
+
+  open-ports:
+    needs: deploy
+    uses: ./.github/workflows/open-ports-task8.yml
+    secrets: inherit
+
+  reboot-vm:
+    needs: [open-ports, check-static-ip, create-and-attach-disk]
+    uses: ./.github/workflows/reboot-vm-task8.yml
+    secrets: inherit
+
+  post-reboot-healthcheck:
+    needs: reboot-vm
+    uses: ./.github/workflows/post-reboot-healthcheck-task8.yml
+    secrets: inherit
+
+  update-deployment-log:
+    needs: post-reboot-healthcheck
+    uses: ./.github/workflows/commit-deployment-log-task8.yml
