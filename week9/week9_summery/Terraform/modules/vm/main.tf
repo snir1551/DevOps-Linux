@@ -26,5 +26,5 @@ resource "azurerm_linux_virtual_machine" "this" {
 
   tags = var.tags
 
-  custom_data = base64encode(file("${path.module}/scripts/install_docker.sh"))
+  custom_data = filebase64("${path.module}/install_docker.sh")
 }
