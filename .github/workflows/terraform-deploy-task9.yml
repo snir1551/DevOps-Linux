@@ -81,11 +81,15 @@ jobs:
           terraform apply -auto-approve \
             -var="ssh_public_key=${{ steps.ssh.outputs.ssh_public_key }}"
 
-      - name: Output Public IP
+      # - name: Output Public IP
+      #   id: vm_ip
+      #   run: |
+      #     echo "value=$(terraform output -raw public_ip_address)" >> "$GITHUB_OUTPUT"
+      - name: Terraform Output
         id: vm_ip
         run: |
-          echo "value=$(terraform output -raw public_ip_address)" >> "$GITHUB_OUTPUT"
-
+          echo "vm_ip=$(terraform output -raw public_ip_address)" >> $GITHUB_OUTPUT
+          
     outputs:
       vm_ip: ${{ steps.vm_ip.outputs.value }}
 
