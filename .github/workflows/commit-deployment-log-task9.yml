@@ -1,13 +1,30 @@
-- name: Download Deployment Log
-  uses: actions/download-artifact@v4
-  with:
-    name: terraform-deployment-log
+ame: Commit Deployment Log Task9
 
-- name: Commit Deployment Log
-  run: |
-    git config user.name "github-actions[bot]"
-    git config user.email "github-actions[bot]@users.noreply.github.com"
-    git add deployment_log.md
-    git commit -m "Add Terraform deployment log"
-    git push || echo "No changes to commit"
+on:
+  workflow_call:
+  workflow_dispatch:
 
+jobs:
+  commit-log:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Deployment Log Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-deployment-log
+          path: .
+
+      - name: Show downloaded files (debug)
+        run: ls -la
+
+      - name: Commit Deployment Log to Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add deployment_log.md
+          git commit -m "Add Terraform deployment log" || echo "No changes to commit"
+          git push
