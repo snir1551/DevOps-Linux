@@ -61,8 +61,6 @@ jobs:
   terraform:
     needs: [ensure-backend]
     uses: ./.github/workflows/terraform-deploy-task9.yml
-    with:
-      ssh_public_key: ${{ needs.generate-ssh-key.outputs.ssh_public_key }}
     secrets: inherit
 
   deploy:
