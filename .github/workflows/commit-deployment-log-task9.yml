@@ -1,4 +1,4 @@
-ame: Commit Deployment Log Task9
+name: Commit Deployment Log Task9
 
 on:
   workflow_call:
