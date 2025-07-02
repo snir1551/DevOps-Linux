@@ -12,6 +12,8 @@ jobs:
   terraform:
     name: Terraform Setup
     runs-on: ubuntu-latest
+    outputs:                     
+      vm_ip: ${{ steps.output_ip.outputs.value }}
     defaults:
       run:
         working-directory: week9/week9_summery/Terraform
