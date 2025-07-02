@@ -24,31 +24,31 @@ jobs:
       - name: Create .env file
         run: echo "${{ secrets.ENV_FILE_TASK8 }}" > week8/week8_summery/app/.env
 
-      - name: Clean Docker on VM
-        run: |
-          ssh -i key.pem -o StrictHostKeyChecking=no azureuser@${{ inputs.vm_ip }} "
-            echo 'Cleaning Docker environment...'
+      # - name: Clean Docker on VM
+      #   run: |
+      #     ssh -i key.pem -o StrictHostKeyChecking=no azureuser@${{ inputs.vm_ip }} "
+      #       echo 'Cleaning Docker environment...'
 
-            containers=\$(docker ps -q)
-            if [ -n \"\$containers\" ]; then
-              echo 'Stopping running containers...'
-              docker stop \$containers
-            else
-              echo 'No running containers to stop.'
-            fi
+      #       containers=\$(docker ps -q)
+      #       if [ -n \"\$containers\" ]; then
+      #         echo 'Stopping running containers...'
+      #         docker stop \$containers
+      #       else
+      #         echo 'No running containers to stop.'
+      #       fi
 
-            sudo docker container prune -f
-            sudo docker image prune -af
-            sudo docker network prune -f
+      #       sudo docker container prune -f
+      #       sudo docker image prune -af
+      #       sudo docker network prune -f
 
-            volumes=\$(docker volume ls -q)
-            if [ -n \"\$volumes\" ]; then
-              echo 'Removing all Docker volumes...'
-              docker volume rm \$volumes
-            else
-              echo 'No Docker volumes to remove.'
-            fi
-          "
+      #       volumes=\$(docker volume ls -q)
+      #       if [ -n \"\$volumes\" ]; then
+      #         echo 'Removing all Docker volumes...'
+      #         docker volume rm \$volumes
+      #       else
+      #         echo 'No Docker volumes to remove.'
+      #       fi
+      #     "
 
       - name: Debug SSH command
         run: echo "ssh -i key.pem -o StrictHostKeyChecking=no azureuser@${{ inputs.vm_ip }}"
