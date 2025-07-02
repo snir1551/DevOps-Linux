@@ -86,7 +86,10 @@ jobs:
       - name: Terraform Output
         id: vm_ip
         run: |
-          echo "vm_ip=$(terraform output -raw public_ip_address)" >> $GITHUB_OUTPUT
+          IP=$(terraform output -raw public_ip_address)
+          echo "Public IP from Terraform: $IP"
+          echo "vm_ip=$IP" >> $GITHUB_OUTPUT
+
 
 
           
