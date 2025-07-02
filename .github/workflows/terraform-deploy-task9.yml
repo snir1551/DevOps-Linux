@@ -55,6 +55,9 @@ jobs:
 
 
       - name: Terraform Apply
-          run: |
-            terraform apply -auto-approve \
-              -var="ssh_public_key=${{ steps.ssh.outputs.ssh_public_key }}"
+        run: |
+          terraform apply -auto-approve \
+            -var="ssh_public_key=${{ steps.ssh.outputs.ssh_public_key }}"
+        
+      - name: Output Public IP
+        run: terraform output public_ip_address
