@@ -52,7 +52,7 @@ jobs:
 
       - name: Sync app folder to Azure VM
         run: |
-          rsync -az --delete --exclude='.git' --exclude='node_modules' -e "ssh -i key.pem -o StrictHostKeyChecking=no" ./ azureuser@${{ inputs.vm_ip }}:/home/azureuser/week9project
+          rsync -az --delete --exclude=.git --exclude=node_modules -e "ssh -i key.pem -o StrictHostKeyChecking=no" ./ azureuser@${{ inputs.vm_ip }}:/home/azureuser/week9project
 
       - name: Deploy with Docker Compose
         run: |
