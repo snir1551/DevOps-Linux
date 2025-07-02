@@ -13,7 +13,7 @@ jobs:
     name: Terraform Setup
     runs-on: ubuntu-latest
     outputs:                     
-      vm_ip: ${{ steps.output_ip.outputs.value }}
+      vm_ip: ${{ steps.vm_ip.outputs.value }}
     defaults:
       run:
         working-directory: week9/week9_summery/Terraform
@@ -80,9 +80,9 @@ jobs:
             -var="ssh_public_key=${{ steps.ssh.outputs.ssh_public_key }}"
 
       - name: Output Public IP
-        id: output_ip
+        id: vm_ip
         run: |
-          terraform output -raw public_ip_address
+          echo "value=$(terraform output -raw public_ip_address)" >> "$GITHUB_OUTPUT"
 
 
 
