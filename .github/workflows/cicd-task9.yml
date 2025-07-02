@@ -34,6 +34,7 @@ jobs:
 
 
   ensure-backend:
+    needs: docker-up
     uses: ./.github/workflows/terraform-backend-setup-task9.yml
     secrets: inherit
 
