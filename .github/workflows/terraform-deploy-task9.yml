@@ -5,6 +5,8 @@ on:
     secrets:
       AZURE_CREDENTIALS:
         required: true
+      VM_SSH_KEY:
+        required: true
 
 jobs:
   terraform:
@@ -18,11 +20,12 @@ jobs:
       ARM_CLIENT_SECRET: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientSecret }}
       ARM_SUBSCRIPTION_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}
       ARM_TENANT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Azure Login
+      - name: Azure Login (CLI)
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
@@ -47,30 +50,30 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
-
       - name: Conditionally Import Resource Group if Not Already in State
         run: |
           RG_NAME="mtc-resources"
           SUB_ID="${{ env.ARM_SUBSCRIPTION_ID }}"
           MODULE_PATH="module.resource_group.azurerm_resource_group.this"
 
+          echo "🔍 Checking if resource group is already in Terraform state..."
           if terraform state list | grep -q "$MODULE_PATH"; then
-            echo "Resource group already managed in Terraform state. Skipping import."
+            echo "✅ Resource group already managed in Terraform state. Skipping import."
           else
+            echo "📡 Checking if resource group exists in Azure..."
             EXISTS=$(az group exists --name "$RG_NAME")
             if [ "$EXISTS" == "true" ]; then
-              echo "Resource group exists. Importing into Terraform state..."
+              echo "📥 Resource group exists. Importing into Terraform state..."
               terraform import -lock=false "$MODULE_PATH" "/subscriptions/$SUB_ID/resourceGroups/$RG_NAME"
             else
-              echo "Resource group does not exist. Terraform will create it during apply."
+              echo "🆕 Resource group does not exist. Terraform will create it during apply."
             fi
           fi
-
 
       - name: Terraform Apply
         run: |
           terraform apply -auto-approve \
             -var="ssh_public_key=${{ steps.ssh.outputs.ssh_public_key }}"
-        
+
       - name: Output Public IP
         run: terraform output public_ip_address
