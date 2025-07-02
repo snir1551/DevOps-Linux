@@ -61,7 +61,7 @@ jobs:
       - name: Deploy with Docker Compose
         run: |
           ssh -i key.pem -o StrictHostKeyChecking=no azureuser@${{ inputs.vm_ip }} "
-            cd /home/snir1551/week8summery/app &&
+            cd /home/azureuser/week9summery/app &&
             sudo docker-compose down --remove-orphans &&
             sudo docker-compose up -d --build
           "
@@ -75,7 +75,7 @@ jobs:
       - name: Logs from Azure VM
         run: |
           ssh -i key.pem -o StrictHostKeyChecking=no azureuser@${{ inputs.vm_ip }} "
-            cd /home/snir1551/week8summery/app
+            cd /home/azureuser/week9summery/app
             sudo docker-compose ps
             sudo docker-compose logs --tail=50
           " > remote_logs.txt
