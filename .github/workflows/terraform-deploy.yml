@@ -1,0 +1,38 @@
+name: Terraform Infrastructure
+
+on:
+  workflow_call:
+    secrets:
+      AZURE_CREDENTIALS:
+        required: true
+
+jobs:
+  terraform:
+    name: Terraform Setup
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: week9/week9_summery/Terraform  # עדכן לפי המיקום שלך
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v3
+
+      - name: 🔧 Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6
+
+      - name: 🔑 Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan.out
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan.out
