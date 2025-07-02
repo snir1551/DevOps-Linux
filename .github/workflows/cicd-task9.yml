@@ -56,7 +56,7 @@ jobs:
 
   terraform:
     needs: generate-ssh-key
-    uses: ./.github/workflows/terraform-task8.yml
+    uses: ./.github/workflows/terraform-task9.yml
     with:
       ssh_public_key: ${{ needs.generate-ssh-key.outputs.ssh_public_key }}
     secrets: inherit
@@ -93,6 +93,6 @@ jobs:
     uses: ./.github/workflows/post-reboot-healthcheck-task8.yml
     secrets: inherit
 
-  update-deployment-log:
-    needs: post-reboot-healthcheck
-    uses: ./.github/workflows/commit-deployment-log-task8.yml
+  # update-deployment-log:
+  #   needs: post-reboot-healthcheck
+  #   uses: ./.github/workflows/commit-deployment-log-task8.yml
