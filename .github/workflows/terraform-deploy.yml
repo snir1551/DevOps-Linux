@@ -12,8 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: week9/week9_summery/Terraform  # עדכן לפי המיקום שלך
-
+        working-directory: week9/week9_summery/Terraform
     steps:
       - name: 📥 Checkout Code
         uses: actions/checkout@v3
