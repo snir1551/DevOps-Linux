@@ -54,27 +54,31 @@ jobs:
 
   create-and-attach-disk:
     needs: deploy
-    uses: ./.github/workflows/create-disk-attach-task8.yml
+    uses: ./.github/workflows/create-disk-attach-task9.yml
     secrets: inherit
 
   check-static-ip:
     needs: deploy
-    uses: ./.github/workflows/check-static-ip-task8.yml
+    uses: ./.github/workflows/check-static-ip-task9.yml
     secrets: inherit
 
   open-ports:
     needs: deploy
-    uses: ./.github/workflows/open-ports-task8.yml
+    uses: ./.github/workflows/open-ports-task9.yml
     secrets: inherit
 
   reboot-vm:
     needs: [open-ports, check-static-ip, create-and-attach-disk]
-    uses: ./.github/workflows/reboot-vm-task8.yml
+    uses: ./.github/workflows/reboot-vm-task9.yml
+    with:
+      vm_ip: ${{ needs.terraform.outputs.vm_ip }}
     secrets: inherit
 
   post-reboot-healthcheck:
     needs: reboot-vm
-    uses: ./.github/workflows/post-reboot-healthcheck-task8.yml
+    uses: ./.github/workflows/post-reboot-healthcheck-task9.yml
+    with:
+      vm_ip: ${{ needs.terraform.outputs.vm_ip }}
     secrets: inherit
 
   # update-deployment-log:
