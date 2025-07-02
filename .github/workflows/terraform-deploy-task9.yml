@@ -1,4 +1,4 @@
-name: Terraform Infrastructure
+name: Terraform Deploy Task9
 
 on:
   workflow_call:
