@@ -7,6 +7,10 @@ on:
         required: true
       VM_SSH_KEY:
         required: true
+    outputs:
+      vm_ip:
+        description: "The VM public IP from terraform output"
+        value: ${{ jobs.terraform.outputs.vm_ip }}
 
 jobs:
   terraform:
