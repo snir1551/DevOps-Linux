@@ -83,7 +83,7 @@ jobs:
           echo "vm_ip=$(terraform output -raw public_ip_address)" >> "$GITHUB_OUTPUT"
 
     outputs:                     
-      vm_ip: ${{ steps.vm_ip.outputs.value }}
+      vm_ip: ${{ steps.vm_ip.outputs.vm_ip }}
 
 
           
