@@ -26,7 +26,7 @@ jobs:
 
       - name: Clean Docker on VM
         run: |
-          ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "
+          ssh -i key.pem -o StrictHostKeyChecking=no azureuser@${{ inputs.vm_ip }} "
             echo 'Cleaning Docker environment...'
 
             containers=\$(docker ps -q)
@@ -52,12 +52,12 @@ jobs:
 
       - name: Sync app folder to Azure VM
         run: |
-          ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "mkdir -p /home/snir1551/week8summery/app"
+          ssh -i key.pem -o StrictHostKeyChecking=no azureuser@${{ inputs.vm_ip }} "mkdir -p /home/snir1551/week8summery/app"
           rsync -az --delete --exclude='.git' --exclude='node_modules' -e "ssh -i key.pem -o StrictHostKeyChecking=no" ./week8/week8_summery/app/ azureuser@${{ inputs.vm_ip }}:/home/snir1551/week8summery/app/
 
       - name: Deploy with Docker Compose
         run: |
-          ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "
+          ssh -i key.pem -o StrictHostKeyChecking=no azureuser@${{ inputs.vm_ip }} "
             cd /home/snir1551/week8summery/app &&
             sudo docker-compose down --remove-orphans &&
             sudo docker-compose up -d --build
@@ -65,13 +65,13 @@ jobs:
 
       - name: Healthcheck and get logs
         run: |
-          ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "
+          ssh -i key.pem -o StrictHostKeyChecking=no azureuser@${{ inputs.vm_ip }} "
             sudo docker ps
           " > remote_logs.txt
 
       - name: Logs from Azure VM
         run: |
-          ssh -i key.pem -o StrictHostKeyChecking=no ${{ secrets.VM_HOST }} "
+          ssh -i key.pem -o StrictHostKeyChecking=no azureuser@${{ inputs.vm_ip }} "
             cd /home/snir1551/week8summery/app
             sudo docker-compose ps
             sudo docker-compose logs --tail=50
