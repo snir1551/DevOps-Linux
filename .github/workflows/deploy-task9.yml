@@ -3,10 +3,10 @@ name: Deploy to Azure VM Task8
 on:
   workflow_dispatch:
   workflow_call:
-  inputs:
-    vm_ip:
-      required: true
-      type: string
+    inputs:
+      vm_ip:
+        required: true
+        type: string
 
 jobs:
   deploy:
