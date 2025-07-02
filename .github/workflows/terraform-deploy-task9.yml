@@ -82,8 +82,8 @@ jobs:
         run: |
           terraform output -raw public_ip_address
 
-  outputs:
-    vm_ip:
-      value: ${{ steps.output_ip.outputs.value }}
+    outputs:
+      vm_ip:
+        value: ${{ steps.output_ip.outputs.value }}
 
           
