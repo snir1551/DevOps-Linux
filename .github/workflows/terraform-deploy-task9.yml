@@ -78,4 +78,12 @@ jobs:
             -var="ssh_public_key=${{ steps.ssh.outputs.ssh_public_key }}"
 
       - name: Output Public IP
-        run: terraform output public_ip_address
+        id: output_ip
+        run: |
+          terraform output -raw public_ip_address
+
+        outputs:
+        vm_ip:
+          value: ${{ steps.output_ip.outputs.value }}
+
+          

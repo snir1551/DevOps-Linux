@@ -68,6 +68,8 @@ jobs:
     needs: [frontend-tests, backend-tests, docker-up, terraform]
     if: ${{ needs.frontend-tests.result == 'success' && needs.backend-tests.result == 'success' }}
     uses: ./.github/workflows/deploy-task8.yml
+    with:
+      vm_ip: ${{ needs.terraform.outputs.vm_ip }}
     secrets: inherit
 
   create-and-attach-disk:
