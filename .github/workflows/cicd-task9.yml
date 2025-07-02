@@ -61,6 +61,7 @@ jobs:
   terraform:
     needs: [ensure-backend]
     uses: ./.github/workflows/terraform-deploy-task9.yml
+    storage-account-name: ${{ needs.setup-remote-state.outputs.storage_account_name }}
     secrets: inherit
 
   deploy:
