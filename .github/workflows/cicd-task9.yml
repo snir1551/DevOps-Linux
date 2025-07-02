@@ -40,11 +40,11 @@ jobs:
     steps:
       - name: Generate SSH key
         run: |
-          ssh-keygen -t rsa -b 4096 -f temp_ssh_key -N ""
+          ssh-keygen -t rsa -b 4096 -f mtcazurekey -N ""
       - name: Output public key
         id: pubkey
         run: |
-          echo "ssh_public_key=$(cat temp_ssh_key.pub)" >> $GITHUB_OUTPUT
+          echo "ssh_public_key=$(cat mtcazurekey.pub)" >> $GITHUB_OUTPUT
       - name: Output private key
         id: privkey
         run: |
