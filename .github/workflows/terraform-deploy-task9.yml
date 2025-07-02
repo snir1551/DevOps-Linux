@@ -54,7 +54,10 @@ jobs:
           echo "ssh_public_key=$(cat ~/.ssh/id_rsa.pub)" >> "$GITHUB_OUTPUT"
 
       - name: Terraform Init
-        run: terraform init
+        run: |
+          echo '## terraform init' >> deployment_log.md
+          echo "Initializing Terraform..." >> deployment_log.md
+          terraform init 2>&1 | tee -a deployment_log.md
 
       - name: Conditionally Import Resource Group
         run: |
@@ -80,15 +83,24 @@ jobs:
 
       - name: Terraform Apply
         run: |
+          echo '## terraform apply' >> deployment_log.md
+          echo "Applying Terraform configuration..." >> deployment_log.md
           terraform apply -auto-approve \
-            -var="ssh_public_key=${{ steps.ssh.outputs.ssh_public_key }}"
+            -var="ssh_public_key=${{ steps.ssh.outputs.ssh_public_key }}" 2>&1 | tee -a deployment_log.md
 
       - name: Terraform Output
         id: vm_ip
         run: |
+          echo '## terraform output' >> deployment_log.md
           IP=$(terraform output -raw public_ip_address)
-          echo "Public IP from Terraform: $IP"
+          echo "Public IP from Terraform: $IP" | tee -a deployment_log.md
           echo "vm_ip=$IP" >> $GITHUB_OUTPUT
+
+      - name: Upload Terraform Deployment Log
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-deployment-log
+          path: week9/week9_summery/Terraform/deployment_log.md
 
 
 

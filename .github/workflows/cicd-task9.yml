@@ -81,6 +81,6 @@ jobs:
       vm_ip: ${{ needs.terraform.outputs.vm_ip }}
     secrets: inherit
 
-  # update-deployment-log:
-  #   needs: post-reboot-healthcheck
-  #   uses: ./.github/workflows/commit-deployment-log-task8.yml
+  update-deployment-log:
+    needs: post-reboot-healthcheck
+    uses: ./.github/workflows/commit-deployment-log-task9.yml
