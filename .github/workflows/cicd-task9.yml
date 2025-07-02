@@ -68,14 +68,14 @@ jobs:
     secrets: inherit
 
   reboot-vm:
-    needs: [open-ports, check-static-ip, create-and-attach-disk]
+    needs: [open-ports, check-static-ip, create-and-attach-disk, terraform]
     uses: ./.github/workflows/reboot-vm-task9.yml
     with:
       vm_ip: ${{ needs.terraform.outputs.vm_ip }}
     secrets: inherit
 
   post-reboot-healthcheck:
-    needs: reboot-vm
+    needs: [reboot-vm, terraform]
     uses: ./.github/workflows/post-reboot-healthcheck-task9.yml
     with:
       vm_ip: ${{ needs.terraform.outputs.vm_ip }}
