@@ -1,0 +1,98 @@
+name: CI/CD Pipeline Task9
+
+on:
+  push:
+    branches: [ main, week9_summery ]
+    paths:
+        - 'week9/week9_summery'
+  workflow_dispatch:
+
+jobs:
+
+  frontend-tests:
+    uses: ./.github/workflows/frontend-test-task8.yml
+  
+  backend-tests:
+    uses: ./.github/workflows/backend-test-task8.yml
+
+  docker-up:
+    needs: [frontend-tests, backend-tests]
+    uses: ./.github/workflows/docker-compose-up-task8.yml
+    secrets: inherit
+
+  notify:
+    needs: [backend-tests, frontend-tests, docker-up]
+    if: always()
+    uses: ./.github/workflows/notify-task8.yml
+    with:
+      job_start_time: ${{ needs.frontend-tests.outputs.job_start_time }}
+      backend_test_status: ${{ needs.backend-tests.result }}
+      frontend_test_status: ${{ needs.frontend-tests.result }}
+      backend_health: ${{ needs.docker-up.outputs.backend_health }}
+      frontend_health: ${{ needs.docker-up.outputs.frontend_health }}
+    secrets: inherit
+
+  generate-ssh-key:
+    runs-on: ubuntu-latest
+    outputs:
+      ssh_public_key: ${{ steps.pubkey.outputs.ssh_public_key }}
+      ssh_private_key: ${{ steps.privkey.outputs.ssh_private_key }}
+    steps:
+      - name: Generate SSH key
+        run: |
+          ssh-keygen -t rsa -b 4096 -f temp_ssh_key -N ""
+      - name: Output public key
+        id: pubkey
+        run: |
+          echo "ssh_public_key=$(cat temp_ssh_key.pub)" >> $GITHUB_OUTPUT
+      - name: Output private key
+        id: privkey
+        run: |
+          echo "ssh_private_key<<EOF" >> $GITHUB_OUTPUT
+          cat temp_ssh_key >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - name: Remove local key files
+        run: rm temp_ssh_key temp_ssh_key.pub
+
+  terraform:
+    needs: generate-ssh-key
+    uses: ./.github/workflows/terraform-deploy-task9.yml
+    with:
+      ssh_public_key: ${{ needs.generate-ssh-key.outputs.ssh_public_key }}
+    secrets: inherit
+
+  deploy:
+    name: Deploy to Azure VM
+    needs: [frontend-tests, backend-tests, docker-up, terraform]
+    if: ${{ needs.frontend-tests.result == 'success' && needs.backend-tests.result == 'success' }}
+    uses: ./.github/workflows/deploy-task8.yml
+    secrets: inherit
+
+  create-and-attach-disk:
+    needs: deploy
+    uses: ./.github/workflows/create-disk-attach-task8.yml
+    secrets: inherit
+
+  check-static-ip:
+    needs: deploy
+    uses: ./.github/workflows/check-static-ip-task8.yml
+    secrets: inherit
+
+  open-ports:
+    needs: deploy
+    uses: ./.github/workflows/open-ports-task8.yml
+    secrets: inherit
+
+  reboot-vm:
+    needs: [open-ports, check-static-ip, create-and-attach-disk]
+    uses: ./.github/workflows/reboot-vm-task8.yml
+    secrets: inherit
+
+  post-reboot-healthcheck:
+    needs: reboot-vm
+    uses: ./.github/workflows/post-reboot-healthcheck-task8.yml
+    secrets: inherit
+
+  # update-deployment-log:
+  #   needs: post-reboot-healthcheck
+  #   uses: ./.github/workflows/commit-deployment-log-task8.yml
