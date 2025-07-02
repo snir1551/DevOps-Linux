@@ -56,19 +56,19 @@ jobs:
           SUB_ID="${{ env.ARM_SUBSCRIPTION_ID }}"
           MODULE_PATH="module.resource_group.azurerm_resource_group.this"
 
-          echo "🔍 Checking if resource group is already in Terraform state..."
+          echo "Checking if resource group is already in Terraform state..."
           if terraform state list | grep -q "$MODULE_PATH"; then
-            echo "✅ Resource group already managed in Terraform state. Skipping import."
+            echo "Resource group already managed in Terraform state. Skipping import."
           else
-            echo "📡 Checking if resource group exists in Azure..."
+            echo "Checking if resource group exists in Azure..."
             EXISTS=$(az group exists --name "$RG_NAME")
             if [ "$EXISTS" == "true" ]; then
-              echo "📥 Resource group exists. Importing into Terraform state..."
+              echo "Resource group exists. Importing into Terraform state..."
               terraform import -input=false -lock=false \
                 -var="ssh_public_key=${{ steps.ssh.outputs.ssh_public_key }}" \
                 "$MODULE_PATH" "/subscriptions/$SUB_ID/resourceGroups/$RG_NAME"
             else
-              echo "🆕 Resource group does not exist. Terraform will create it during apply."
+              echo "Resource group does not exist. Terraform will create it during apply."
             fi
           fi
 
@@ -82,8 +82,8 @@ jobs:
         run: |
           terraform output -raw public_ip_address
 
-        outputs:
-        vm_ip:
-          value: ${{ steps.output_ip.outputs.value }}
+  outputs:
+    vm_ip:
+      value: ${{ steps.output_ip.outputs.value }}
 
           
