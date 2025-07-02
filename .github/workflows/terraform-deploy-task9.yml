@@ -5,7 +5,7 @@ on:
     outputs:
       vm_ip:
         description: "Public IP of the VM"
-        value: ${{ jobs.get-ip.outputs.vm_ip }}
+        value: ${{ jobs.terraform.outputs.vm_ip }}
     secrets:
       AZURE_CREDENTIALS:
         required: true
@@ -17,7 +17,7 @@ jobs:
     name: Terraform Setup
     runs-on: ubuntu-latest
     outputs:
-      vm_ip: ${{ steps.get_vm_ip.outputs.vm_ip }}
+      vm_ip: ${{ steps.vm_ip.outputs.vm_ip }}
     defaults:
       run:
         working-directory: week9/week9_summery/Terraform
