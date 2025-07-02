@@ -93,7 +93,6 @@ variable "virtual_machine" {
     name              = string
     size              = string
     admin_user        = string
-    ssh_key_path      = string
     public_ip_name    = string
     public_ip_alloc   = string
     nic_name          = string
@@ -106,7 +105,6 @@ variable "virtual_machine" {
     name              = "mtc-vm"
     size              = "Standard_B1s"
     admin_user        = "azureuser"
-    ssh_key_path      = "~/.ssh/mtcazurekey.pub"
     public_ip_name    = "mtc-ip"
     public_ip_alloc   = "Static"
     nic_name          = "mtc-nic"
@@ -115,4 +113,9 @@ variable "virtual_machine" {
     disk_caching      = "ReadWrite"
     disk_storage_type = "Standard_LRS"
   }
+}
+
+variable "ssh_public_key" {
+  description = "SSH public key for VM"
+  type        = string
 }

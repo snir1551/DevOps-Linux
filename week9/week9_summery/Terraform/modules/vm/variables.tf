@@ -10,14 +10,14 @@ variable "location" {
   description = "Azure region"
 }
 
-variable "tags" {
-  type        = map(string)
-  description = "Common tags"
-}
-
 variable "subnet_id" {
   description = "ID of the subnet to associate with the NIC"
   type        = string
+}
+
+variable "tags" {
+  type        = map(string)
+  description = "Common tags"
 }
 
 variable "vm" {
@@ -26,12 +26,11 @@ variable "vm" {
     name                = string
     size                = string
     admin_user          = string
-    ssh_key_path        = string
+    public_ip_name      = string
+    public_ip_alloc     = string
     nic_name            = string
     ip_config_name      = string
     private_ip_alloc    = string
-    public_ip_name      = string
-    public_ip_alloc     = string
     disk_caching        = string
     disk_storage_type   = string
   })
@@ -39,5 +38,10 @@ variable "vm" {
 
 variable "network_interface_id" {
   description = "The ID of the network interface to attach to the VM"
+  type        = string
+}
+
+variable "ssh_public_key" {
+  description = "SSH public key for VM"
   type        = string
 }

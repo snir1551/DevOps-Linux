@@ -57,6 +57,7 @@ module "vm" {
   tags                 = var.common_tags
   vm                   = var.virtual_machine
   network_interface_id = module.network.network_interface_id
+  ssh_public_key       = var.ssh_public_key
 }
 
 
