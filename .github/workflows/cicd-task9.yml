@@ -1,4 +1,4 @@
-name: CI/CD Pipeline Task8
+name: CI/CD Pipeline Task9
 
 on:
   push:
@@ -32,9 +32,33 @@ jobs:
       frontend_health: ${{ needs.docker-up.outputs.frontend_health }}
     secrets: inherit
 
+  generate-ssh-key:
+    runs-on: ubuntu-latest
+    outputs:
+      ssh_public_key: ${{ steps.pubkey.outputs.ssh_public_key }}
+      ssh_private_key: ${{ steps.privkey.outputs.ssh_private_key }}
+    steps:
+      - name: Generate SSH key
+        run: |
+          ssh-keygen -t rsa -b 4096 -f temp_ssh_key -N ""
+      - name: Output public key
+        id: pubkey
+        run: |
+          echo "ssh_public_key=$(cat temp_ssh_key.pub)" >> $GITHUB_OUTPUT
+      - name: Output private key
+        id: privkey
+        run: |
+          echo "ssh_private_key<<EOF" >> $GITHUB_OUTPUT
+          cat temp_ssh_key >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - name: Remove local key files
+        run: rm temp_ssh_key temp_ssh_key.pub
+
   terraform:
-    name: Terraform Infra Deploy
-    uses: ./.github/workflows/terraform-deploy.yml
+    needs: generate-ssh-key
+    uses: ./.github/workflows/terraform-task8.yml
+    with:
+      ssh_public_key: ${{ needs.generate-ssh-key.outputs.ssh_public_key }}
     secrets: inherit
 
   deploy:
