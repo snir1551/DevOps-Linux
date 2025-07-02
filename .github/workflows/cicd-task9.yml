@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
     paths:
-        - 'week8/week9_summery'
+        - 'week9/week9_summery'
   workflow_dispatch:
 
 jobs:
@@ -39,7 +39,7 @@ jobs:
 
   deploy:
     name: Deploy to Azure VM
-    needs: [frontend-tests, backend-tests, docker-up]
+    needs: [frontend-tests, backend-tests, docker-up, terraform]
     if: ${{ needs.frontend-tests.result == 'success' && needs.backend-tests.result == 'success' }}
     uses: ./.github/workflows/deploy-task8.yml
     secrets: inherit
