@@ -32,27 +32,6 @@ jobs:
       frontend_health: ${{ needs.docker-up.outputs.frontend_health }}
     secrets: inherit
 
-  # generate-ssh-key:
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     ssh_public_key: ${{ steps.pubkey.outputs.ssh_public_key }}
-  #     ssh_private_key: ${{ steps.privkey.outputs.ssh_private_key }}
-  #   steps:
-  #     - name: Generate SSH key
-  #       run: |
-  #         ssh-keygen -t rsa -b 4096 -f mtcazurekey -N ""
-  #     - name: Output public key
-  #       id: pubkey
-  #       run: |
-  #         echo "ssh_public_key=$(cat mtcazurekey.pub)" >> $GITHUB_OUTPUT
-  #     - name: Output private key
-  #       id: privkey
-  #       run: |
-  #         echo "ssh_private_key<<EOF" >> $GITHUB_OUTPUT
-  #         cat mtcazurekey >> $GITHUB_OUTPUT
-  #         echo "EOF" >> $GITHUB_OUTPUT
-  #     - name: Remove local key files
-  #       run: rm mtcazurekey mtcazurekey.pub
 
   ensure-backend:
     uses: ./.github/workflows/terraform-backend-setup-task9.yml
@@ -69,7 +48,7 @@ jobs:
     if: ${{ needs.frontend-tests.result == 'success' && needs.backend-tests.result == 'success' }}
     uses: ./.github/workflows/deploy-task8.yml
     with:
-      vm_ip: ${{ needs.terraform.outputs.vm_ip }}
+      vm_ip: ${{ needs.terraform.outputs.vm_ip }}'
     secrets: inherit
 
   create-and-attach-disk:
