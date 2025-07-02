@@ -54,8 +54,12 @@ jobs:
       - name: Remove local key files
         run: rm mtcazurekey mtcazurekey.pub
 
+  ensure-backend:
+    uses: ./.github/workflows/terraform-backend-setup-task9.yml
+    secrets: inherit
+
   terraform:
-    needs: generate-ssh-key
+    needs: [generate-ssh-key, ensure-backend]
     uses: ./.github/workflows/terraform-deploy-task9.yml
     with:
       ssh_public_key: ${{ needs.generate-ssh-key.outputs.ssh_public_key }}
