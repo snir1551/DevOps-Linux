@@ -2,6 +2,10 @@ name: Terraform Deploy Task9
 
 on:
   workflow_call:
+    inputs:
+      ssh_public_key:
+        required: true
+        type: string
     secrets:
       AZURE_CREDENTIALS:
         required: true
