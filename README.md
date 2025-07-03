@@ -985,6 +985,26 @@ https://github.com/snir1551/DevOps-Linux/wiki/Week-6-%E2%80%93-Docker-&-Containe
 
 ******
 
+<details>
+<summary>Week 9 – Daily Practice Tasks: Terraform on Azure</summary>
+<br />
+
+[week9-Terraform on Azure](https://github.com/snir1551/DevOps-Linux/wiki/Week-9-%E2%80%93-Daily-Practice-Tasks:-Terraform-on-Azure)
+
+</details>
+
+******
+
+<details>
+<summary>Week 9 – Summary Task: Terraform on Azure</summary>
+<br />
+
+[week9-Terraform on Azure](https://github.com/snir1551/DevOps-Linux/wiki/Week-9-%E2%80%93-Summary-Task:-Terraform-on-Azure)
+
+</details>
+
+******
+
 </details>
 
 

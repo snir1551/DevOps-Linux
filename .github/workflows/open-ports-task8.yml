@@ -21,7 +21,7 @@ jobs:
 
       - name: Open port 3000 (frontend)
         run: |
-          echo "🔍 Checking if rule Allow-Port-3000 exists..."
+          echo "Checking if rule Allow-Port-3000 exists..."
           if ! az network nsg rule show \
             --resource-group $RESOURCE_GROUP \
             --nsg-name $NSG_NAME \
@@ -44,7 +44,7 @@ jobs:
 
       - name: Open port 8080 (backend)
         run: |
-          echo "🔍 Checking if rule Allow-Port-8080 exists..."
+          echo "Checking if rule Allow-Port-8080 exists..."
           if ! az network nsg rule show \
             --resource-group $RESOURCE_GROUP \
             --nsg-name $NSG_NAME \
