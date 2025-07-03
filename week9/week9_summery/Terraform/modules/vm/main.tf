@@ -27,32 +27,27 @@ resource "azurerm_linux_virtual_machine" "this" {
   tags = var.tags
 
   custom_data = base64encode(<<EOF
-      #!/bin/bash
-      apt-get update -y
+  #!/bin/bash
+  sudo apt-get update -y
+  sudo apt-get install -y docker.io
 
+  sudo systemctl enable docker
+  sudo systemctl start docker
 
-      apt-get install -y docker.io
+  # Docker Compose
+  sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-\$(uname -s)-\$(uname -m)" \
+    -o /usr/local/bin/docker-compose
+  sudo chmod +x /usr/local/bin/docker-compose
+  sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 
-
-      systemctl enable docker
-      systemctl start docker
-
-
-      curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" \
-        -o /usr/local/bin/docker-compose
-
-      chmod +x /usr/local/bin/docker-compose
-      ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-
-      # Setup Swap Memory (2GB) if not already present
-      if ! swapon --show | grep -q '/swapfile'; then
-        sudo fallocate -l 1G /swapfile
-        sudo chmod 600 /swapfile
-        sudo mkswap /swapfile
-        sudo swapon /swapfile
-        echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
-      fi
-
+  # Setup Swap (optional)
+  if ! swapon --show | grep -q '/swapfile'; then
+    sudo fallocate -l 1G /swapfile
+    sudo chmod 600 /swapfile
+    sudo mkswap /swapfile
+    sudo swapon /swapfile
+    echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+  fi
 EOF
-  )
+)
 }
